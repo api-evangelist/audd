@@ -1,0 +1,63 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: AudD
+providerId: audd
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: false
+tags:
+- Music
+- Music Recognition
+- Audio
+- Fingerprinting
+- Lyrics
+- Rate Limiting
+- Quotas
+- Throttling
+description: >-
+  AudD gates access primarily through request quotas rather than fine-grained
+  per-second rate limits. Without an api_token, usage is capped at 10 requests
+  per method per day. With a token, the 300-request free allotment and any
+  monthly plan limits apply; additional usage is billed per 1,000 requests.
+  The enterprise endpoint counts one request per 12 seconds of audio scanned.
+  Specific per-second throttling values are not documented publicly.
+notes: >-
+  Confirm any per-second or concurrency limits with AudD support during
+  reconciliation; the public documentation describes daily/monthly request
+  quotas rather than burst rate limits.
+sources:
+- https://docs.audd.io/
+- https://docs.audd.io/enterprise/
+- https://audd.io/
+responseCodes:
+  throttled: 429
+limits:
+- name: Anonymous Requests Per Day
+  scope: ip
+  metric: requests
+  limit: 10 per method per day (no api_token)
+  notes: Free anonymous usage without an API token.
+- name: Free Token Allotment
+  scope: account
+  metric: requests
+  limit: 300 free requests
+  notes: Included free with a new account before billing begins.
+- name: Monthly Plan Quota
+  scope: account
+  metric: requests
+  limit: per purchased plan (e.g. 100K / 200K / 500K per month)
+  notes: Usage beyond the plan is billed per 1,000 requests.
+- name: Enterprise Chunk Billing
+  scope: account
+  metric: requests
+  limit: 1 request per 12 seconds of audio scanned
+  notes: Applies to the enterprise file-scan endpoint.
+policies:
+- name: Quota-Based Access
+  description: Access is controlled by free allotment and purchased monthly request quotas rather than per-second throttling.
+- name: Backoff Strategy
+  description: Clients should implement retries with exponential backoff and honor any 429 responses.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

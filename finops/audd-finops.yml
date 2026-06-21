@@ -1,0 +1,88 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: AudD
+providerId: audd
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: true
+tags:
+- Music
+- Music Recognition
+- Audio
+- Fingerprinting
+- Lyrics
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of AudD spend. AudD bills usage-based per-request rates for music
+  recognition (including recognizeWithOffset, humming, and lyrics methods),
+  per-stream-per-month rates for audio stream monitoring, and chunk-based
+  billing on the enterprise file-scan endpoint (one request per 12 seconds of
+  audio). A 300-request free allotment precedes billing.
+notes: >-
+  Per-1,000 and per-stream rates are subject to change and volume discounts;
+  verify against the AudD pricing/contact pages during reconciliation.
+sources:
+- https://audd.io/
+- https://docs.audd.io/
+- https://docs.audd.io/enterprise/
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: AudD
+serviceCategory: AI and Machine Learning
+billingModel:
+  pricingCategory: Usage-Based
+  billingFrequency: Monthly
+  billingCurrency: USD
+  chargeCategories:
+  - Usage
+  - Purchase
+focusColumns:
+  ServiceName: AudD Music Recognition API
+  ServiceCategory: AI and Machine Learning
+  ProviderName: AudD
+  PublisherName: AudD
+  InvoiceIssuerName: AudD
+  BillingCurrency: USD
+  ChargeCategory: Usage
+  PricingCategory: Usage-Based
+meters:
+- name: recognition_requests
+  description: Music recognition API calls billed per 1,000 requests after the free allotment.
+  unit: requests
+  aggregation: sum
+  dimensions:
+  - account
+  - method
+- name: enterprise_chunks
+  description: Enterprise file-scan usage, counted as one request per 12 seconds of audio scanned.
+  unit: requests
+  aggregation: sum
+  dimensions:
+  - account
+- name: stream_months
+  description: Audio stream monitoring billed per stream per month.
+  unit: streams
+  aggregation: sum
+  dimensions:
+  - account
+  - database
+principles:
+- name: Visibility
+  description: Track request counts per method (recognize, recognizeWithOffset, findLyrics) and per stream in the AudD dashboard.
+- name: Allocation
+  description: Separate API tokens per workload/team to map recognition spend to internal cost centers.
+- name: Optimization
+  description: Use enterprise skip/every/limit controls to scan fewer chunks; commit to monthly tiers for lower per-1,000 rates at volume.
+- name: Accountability
+  description: Assign owners per token; review monthly request and stream spend against budget.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

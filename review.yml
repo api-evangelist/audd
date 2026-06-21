@@ -1,0 +1,67 @@
+aid: audd
+name: AudD
+review:
+  question: Does AudD expose a documented public WebSocket API?
+  answer: false
+  date: '2026-06-21'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was created. AudD's documented surface is a synchronous
+    HTTP REST API. Its stream-monitoring product continuously recognizes audio
+    streams, but it is operated as a managed service configured with AudD rather
+    than a self-serve documented WebSocket or SSE event stream, so there is no
+    documented event-driven transport to model.
+findings:
+  summary: |
+    AudD does not publish a documented public WebSocket API. The service exposes
+    synchronous HTTPS REST methods under https://api.audd.io (recognize,
+    recognizeWithOffset, findLyrics) and a separate enterprise file-scan endpoint
+    under https://enterprise.audd.io. Authentication is via an api_token passed
+    as a query or form field. No realtime bidirectional WebSocket (ws:// or
+    wss://) or Server-Sent Events endpoint is documented for recognition,
+    lyrics, or enterprise scanning. AudD's audio-stream monitoring is delivered
+    as a managed service, not a self-serve documented streaming API surface.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://api.audd.io
+      documented: true
+    - protocol: REST
+      scheme: https
+      baseURL: https://enterprise.audd.io
+      documented: true
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented in AudD's API reference as of the review date.
+  endpointsConfirmedRest:
+    - POST https://api.audd.io/
+    - POST https://api.audd.io/recognizeWithOffset/
+    - POST https://api.audd.io/findLyrics/
+    - POST https://enterprise.audd.io/
+  authentication:
+    type: apiKey
+    parameter: api_token
+    location: query or form body
+sources:
+  - url: https://docs.audd.io/
+    type: Documentation
+    note: Describes the recognize, recognizeWithOffset, and findLyrics REST methods on api.audd.io.
+  - url: https://docs.audd.io/enterprise/
+    type: Documentation
+    note: Enterprise file-scan endpoint on enterprise.audd.io; POST with api_token, url/file, and chunk controls.
+  - url: https://audd.io/
+    type: Website
+    note: Product overview and pricing; no WebSocket API mentioned.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket or SSE protocol surface is documented for AudD, so no AsyncAPI
+    document was authored. The apis.yml catalogs the documented REST methods
+    (recognition, recognize-with-offset, humming, enterprise file scan, lyrics)
+    with OpenAPI as the interface specification.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

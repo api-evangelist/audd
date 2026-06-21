@@ -1,0 +1,147 @@
+{
+  "info": {
+    "name": "AudD Music Recognition API",
+    "description": "AudD music recognition REST API. Methods recognize music from a file, URL, or base64 audio; return the offset of a match (also used for humming recognition); search lyrics; and scan long audio/video files via the enterprise endpoint. Authenticate with api_token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.audd.io"
+    },
+    {
+      "key": "enterpriseUrl",
+      "value": "https://enterprise.audd.io"
+    },
+    {
+      "key": "api_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Recognition",
+      "item": [
+        {
+          "name": "Recognize music from a file, URL, or base64 audio.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "api_token", "value": "{{api_token}}", "type": "text" },
+                { "key": "url", "value": "", "type": "text", "description": "HTTP URL of an audio file or page containing audio." },
+                { "key": "file", "value": "", "type": "file", "description": "Audio file upload (use instead of url)." },
+                { "key": "return", "value": "apple_music,spotify", "type": "text", "description": "Comma-separated metadata providers." },
+                { "key": "market", "value": "us", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Identifies a song from a short audio sample."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "code": 200,
+              "status": "OK",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"result\": {\n    \"artist\": \"Imagine Dragons\",\n    \"title\": \"Believer\",\n    \"album\": \"Evolve\",\n    \"release_date\": \"2017-02-01\",\n    \"label\": \"Interscope Records\",\n    \"timecode\": \"00:42\",\n    \"song_link\": \"https://lis.tn/Believer\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Recognize with offset (also used for humming recognition).",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "api_token", "value": "{{api_token}}", "type": "text" },
+                { "key": "url", "value": "", "type": "text" },
+                { "key": "file", "value": "", "type": "file" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/recognizeWithOffset/",
+              "host": ["{{baseUrl}}"],
+              "path": ["recognizeWithOffset", ""]
+            },
+            "description": "Recognition variant returning the offset of the matched fragment; also used for recognition by humming or singing."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Lyrics",
+      "item": [
+        {
+          "name": "Find lyrics by title, artist, or excerpt.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "api_token", "value": "{{api_token}}", "type": "text" },
+                { "key": "q", "value": "", "type": "text", "description": "Song title and artist, or an excerpt of the lyrics." }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/findLyrics/",
+              "host": ["{{baseUrl}}"],
+              "path": ["findLyrics", ""]
+            },
+            "description": "Searches for songs and their lyrics by title and artist or by an excerpt of the lyrics."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Enterprise",
+      "item": [
+        {
+          "name": "Scan a long audio/video file for all songs.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "api_token", "value": "{{api_token}}", "type": "text" },
+                { "key": "url", "value": "", "type": "text" },
+                { "key": "file", "value": "", "type": "file" },
+                { "key": "skip", "value": "", "type": "text" },
+                { "key": "every", "value": "", "type": "text" },
+                { "key": "limit", "value": "", "type": "text" },
+                { "key": "accurate_offsets", "value": "true", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{enterpriseUrl}}/",
+              "host": ["{{enterpriseUrl}}"],
+              "path": [""]
+            },
+            "description": "Enterprise endpoint that scans hours- or days-long audio and video files in 12-second chunks, returning every matched song with timecodes, offsets, and metadata."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

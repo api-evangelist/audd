@@ -1,0 +1,171 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: AudD
+providerId: audd
+created: '2026-06-21'
+modified: '2026-06-21'
+reconciled: true
+tags:
+- Music
+- Music Recognition
+- Audio
+- Fingerprinting
+- Lyrics
+- Plans
+description: >-
+  AudD uses a usage-based pricing model. New accounts get 300 free recognition
+  requests with no credit card. Beyond the free allotment, recognition is billed
+  per 1,000 requests starting at $5 / 1,000 with volume discounts down to roughly
+  $2 / 1,000. Audio stream monitoring is priced per stream per month. Sending
+  more than 500,000 requests per month or monitoring more than 100 streams is
+  handled via custom enterprise terms.
+notes: >-
+  Without an api_token, up to 10 free requests per method per day are allowed.
+  Verify current per-1,000 and per-stream rates on the AudD pricing/contact page
+  during reconciliation.
+sources:
+- https://audd.io/
+- https://docs.audd.io/
+- https://docs.audd.io/enterprise/
+- https://docs.audd.io/streams/
+plans:
+- id: audd-free-trial
+  name: Free Trial
+  type: free
+  description: >-
+    300 free recognition requests on signup with no credit card. Anonymous use
+    without an api_token is limited to 10 requests per method per day.
+  entries:
+  - label: Free Requests
+    name: free_requests
+    type: free
+    metric: requests
+    limit: 300
+    timeFrame: lifetime
+    geo: global
+    unit: 1
+    price: free
+    userMultiplied: false
+  - label: Anonymous Requests (no token)
+    name: anonymous_requests
+    type: free
+    metric: requests
+    limit: 10
+    timeFrame: day
+    geo: global
+    unit: 1
+    price: free
+    userMultiplied: false
+  elements:
+  - name: Music Recognition
+  - name: Recognize with Offset
+  - name: Humming Recognition
+  - name: Lyrics
+- id: audd-pay-as-you-go
+  name: Pay-as-you-go
+  type: usage
+  description: >-
+    Per-request recognition billing after the free allotment, with volume
+    discounts as monthly request counts increase.
+  entries:
+  - label: Recognition Requests
+    name: recognition_requests
+    type: usage
+    metric: requests
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1000
+    price: from $5 per 1,000 requests, down to ~$2 per 1,000 at volume
+    userMultiplied: false
+  - label: 100K Requests / month
+    name: tier_100k
+    type: usage
+    metric: requests
+    limit: 100000
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $450 per month
+    userMultiplied: false
+  - label: 200K Requests / month
+    name: tier_200k
+    type: usage
+    metric: requests
+    limit: 200000
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $800 per month
+    userMultiplied: false
+  - label: 500K Requests / month
+    name: tier_500k
+    type: usage
+    metric: requests
+    limit: 500000
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $1,800 per month (~$2 per 1,000)
+    userMultiplied: false
+  elements:
+  - name: Music Recognition
+  - name: Recognize with Offset
+  - name: Humming Recognition
+  - name: Lyrics
+  - name: Enterprise File Scan
+- id: audd-streams
+  name: Audio Stream Monitoring
+  type: usage
+  description: >-
+    Continuous music recognition for live audio streams, priced per stream per
+    month.
+  entries:
+  - label: Stream (AudD music DB)
+    name: stream_audd_db
+    type: usage
+    metric: streams
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $45 per stream per month
+    userMultiplied: false
+  - label: Stream (your uploaded content DB)
+    name: stream_custom_db
+    type: usage
+    metric: streams
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $25 per stream per month
+    userMultiplied: false
+  elements:
+  - name: Stream Monitoring
+- id: audd-enterprise
+  name: Enterprise
+  type: enterprise
+  description: >-
+    Custom terms for sending more than 500,000 requests per month, monitoring
+    more than 100 streams, or scanning very large audio/video files via the
+    enterprise endpoint. Contact AudD.
+  entries:
+  - label: Enterprise Agreement
+    name: enterprise
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: contact sales
+    userMultiplied: false
+  elements:
+  - name: Enterprise File Scan
+  - name: Custom Volume Pricing
+  - name: High-Volume Stream Monitoring
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

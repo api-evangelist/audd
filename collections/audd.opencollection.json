@@ -1,0 +1,116 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AudD Music Recognition API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "api_token",
+      "value": "{{api_token}}",
+      "in": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Recognition",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Recognize music from a file, URL, or base64 audio.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                { "name": "api_token", "value": "{{api_token}}" },
+                { "name": "url", "value": "" },
+                { "name": "return", "value": "apple_music,spotify" }
+              ]
+            }
+          },
+          "docs": "Identifies a song from a short audio sample provided as a file upload, a remote url, or a base64-encoded audio string."
+        },
+        {
+          "info": {
+            "name": "Recognize with offset (also used for humming recognition).",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/recognizeWithOffset/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                { "name": "api_token", "value": "{{api_token}}" },
+                { "name": "url", "value": "" }
+              ]
+            }
+          },
+          "docs": "Recognition variant that returns the offset of the matched fragment within the submitted audio; also the method used for recognition by humming or singing."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Lyrics",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Find lyrics by title, artist, or excerpt.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/findLyrics/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                { "name": "api_token", "value": "{{api_token}}" },
+                { "name": "q", "value": "" }
+              ]
+            }
+          },
+          "docs": "Searches for songs and their lyrics by title and artist or by an excerpt of the lyrics."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Enterprise",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Scan a long audio/video file for all songs.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://enterprise.audd.io/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                { "name": "api_token", "value": "{{api_token}}" },
+                { "name": "url", "value": "" },
+                { "name": "accurate_offsets", "value": "true" }
+              ]
+            }
+          },
+          "docs": "Enterprise endpoint that scans hours- or days-long audio and video files in 12-second chunks, returning every matched song with timecodes, offsets, and metadata."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
