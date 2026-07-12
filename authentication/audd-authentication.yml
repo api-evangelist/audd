@@ -1,0 +1,17 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/audd-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - query
+schemes:
+- name: api_token
+  type: apiKey
+  in: query
+  parameter: api_token
+  description: API token obtained from the AudD dashboard. May also be supplied as a form field
+    in the request body.
+  sources:
+  - openapi/audd-openapi.yml

@@ -125,6 +125,10 @@ apis:
   description: Searches for song lyrics by title, artist, or an excerpt of the lyrics
     via the findLyrics method, returning matching songs with full lyrics and metadata.
 common:
+- type: DomainSecurity
+  url: security/audd-domain-security.yml
+- type: Authentication
+  url: authentication/audd-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/AudDMusic
 - type: LinkedIn
