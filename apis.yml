@@ -125,6 +125,8 @@ apis:
   description: Searches for song lyrics by title, artist, or an excerpt of the lyrics
     via the findLyrics method, returning matching songs with full lyrics and metadata.
 common:
+- type: AgenticAccess
+  url: agentic-access/audd-agentic-access.yml
 - type: DomainSecurity
   url: security/audd-domain-security.yml
 - type: Authentication
