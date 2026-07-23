@@ -1,0 +1,154 @@
+openapi: 3.0.1
+info:
+  title: AudD Music Lyrics Recognition API
+  description: AudD is a music recognition service. The API identifies songs from an uploaded audio file, a remote audio/video URL, or base64-encoded audio and returns rich track metadata. It also supports recognition with offset (including humming/singing) and lyrics search. All methods authenticate with an `api_token` and accept either form-encoded or multipart/form-data input.
+  termsOfService: https://audd.io/terms/
+  contact:
+    name: AudD Support
+    email: api@audd.io
+    url: https://audd.io/
+  version: '1.0'
+servers:
+- url: https://api.audd.io
+  description: Primary music recognition and lyrics API
+- url: https://enterprise.audd.io
+  description: Enterprise endpoint for scanning long audio/video files
+security:
+- api_token: []
+tags:
+- name: Recognition
+paths:
+  /:
+    post:
+      operationId: recognize
+      tags:
+      - Recognition
+      summary: Recognize music from a file, URL, or base64 audio
+      description: Identifies a song from a short audio sample. Provide the audio as a multipart file upload, a remote `url`, or a base64-encoded `audio` string. Returns matched track metadata and, optionally, links to streaming services.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecognizeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecognizeRequest'
+      responses:
+        '200':
+          description: Recognition result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecognizeResponse'
+  /recognizeWithOffset/:
+    post:
+      operationId: recognizeWithOffset
+      tags:
+      - Recognition
+      summary: Recognize music and return the offset of the match
+      description: Recognition variant that returns the offset (position) of the matched fragment within the submitted audio. This is also the method used for recognition by humming or singing a melody.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecognizeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecognizeRequest'
+      responses:
+        '200':
+          description: Recognition result with offset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecognizeResponse'
+components:
+  schemas:
+    Track:
+      type: object
+      properties:
+        artist:
+          type: string
+          example: Imagine Dragons
+        title:
+          type: string
+          example: Believer
+        album:
+          type: string
+          example: Evolve
+        release_date:
+          type: string
+          format: date
+          example: '2017-02-01'
+        label:
+          type: string
+          example: Interscope Records
+        timecode:
+          type: string
+          description: Position of the match within the recognized song (mm:ss).
+          example: 00:42
+        offset:
+          type: string
+          description: Position of the matched fragment within the submitted audio (recognizeWithOffset only).
+        song_link:
+          type: string
+          format: uri
+          example: https://lis.tn/Believer
+        isrc:
+          type: string
+          example: USUM71700626
+        apple_music:
+          type: object
+          additionalProperties: true
+          description: Apple Music metadata when requested via the `return` parameter.
+        spotify:
+          type: object
+          additionalProperties: true
+          description: Spotify metadata when requested via the `return` parameter.
+    RecognizeResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: '`success` or `error`.'
+          example: success
+        result:
+          oneOf:
+          - $ref: '#/components/schemas/Track'
+          - type: 'null'
+          description: The matched track, or null when nothing is recognized.
+    RecognizeRequest:
+      type: object
+      properties:
+        api_token:
+          type: string
+          description: Your AudD API token.
+        url:
+          type: string
+          format: uri
+          description: HTTP URL of an audio file or a webpage/video containing audio to be recognized. Use instead of `file`.
+        file:
+          type: string
+          format: binary
+          description: Audio file uploaded via multipart/form-data. Use instead of `url`.
+        audio:
+          type: string
+          description: Base64-encoded audio (limited support). Alternative to `file`/`url`.
+        return:
+          type: string
+          description: Comma-separated list of additional metadata providers to include, e.g. `apple_music,spotify,deezer,napster,musicbrainz`.
+          example: apple_music,spotify
+        market:
+          type: string
+          description: Two-letter country code for Apple Music / iTunes / Spotify results.
+          default: us
+      required:
+      - api_token
+  securitySchemes:
+    api_token:
+      type: apiKey
+      in: query
+      name: api_token
+      description: API token obtained from the AudD dashboard. May also be supplied as a form field in the request body.

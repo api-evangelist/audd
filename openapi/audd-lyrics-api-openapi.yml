@@ -1,0 +1,86 @@
+openapi: 3.0.1
+info:
+  title: AudD Music Recognition Lyrics API
+  description: AudD is a music recognition service. The API identifies songs from an uploaded audio file, a remote audio/video URL, or base64-encoded audio and returns rich track metadata. It also supports recognition with offset (including humming/singing) and lyrics search. All methods authenticate with an `api_token` and accept either form-encoded or multipart/form-data input.
+  termsOfService: https://audd.io/terms/
+  contact:
+    name: AudD Support
+    email: api@audd.io
+    url: https://audd.io/
+  version: '1.0'
+servers:
+- url: https://api.audd.io
+  description: Primary music recognition and lyrics API
+- url: https://enterprise.audd.io
+  description: Enterprise endpoint for scanning long audio/video files
+security:
+- api_token: []
+tags:
+- name: Lyrics
+paths:
+  /findLyrics/:
+    post:
+      operationId: findLyrics
+      tags:
+      - Lyrics
+      summary: Search for song lyrics
+      description: Searches for songs and their lyrics by title and artist or by an excerpt of the lyrics, using the `q` query parameter.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FindLyricsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FindLyricsRequest'
+      responses:
+        '200':
+          description: Lyrics search result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindLyricsResponse'
+components:
+  schemas:
+    FindLyricsRequest:
+      type: object
+      properties:
+        api_token:
+          type: string
+          description: Your AudD API token.
+        q:
+          type: string
+          description: Search query - a song title and artist, or an excerpt from the lyrics.
+      required:
+      - api_token
+      - q
+    FindLyricsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              song_id:
+                type: string
+              artist:
+                type: string
+              title:
+                type: string
+              lyrics:
+                type: string
+              media:
+                type: string
+              full_title:
+                type: string
+  securitySchemes:
+    api_token:
+      type: apiKey
+      in: query
+      name: api_token
+      description: API token obtained from the AudD dashboard. May also be supplied as a form field in the request body.
