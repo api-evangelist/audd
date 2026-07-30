@@ -7,7 +7,20 @@ description: AudD is a music recognition service that identifies songs from audi
   rich track metadata (artist, title, album, ISRC, links to Apple Music, Spotify,
   Deezer and more), supports recognition by humming/singing, lyrics search, and an
   enterprise endpoint for scanning long audio and video files.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: open
+  trial: true
+  try_now: true
+  public: true
+  label: Freemium (free trial) · Open access
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/audd.png
 tags:
 - Music
 - Music Recognition
@@ -18,112 +31,46 @@ created: '2026-06-21'
 modified: '2026-06-21'
 specificationVersion: '0.19'
 apis:
-- aid: audd:music-recognition
-  name: AudD Music Recognition API
-  tags:
-  - Music Recognition
-  - Audio
-  - Fingerprinting
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://docs.audd.io/
-  baseURL: https://api.audd.io
-  properties:
-  - url: https://docs.audd.io/
-    type: Documentation
-  - url: https://docs.audd.io/#recognize
-    type: APIReference
-  - url: openapi/audd-openapi.yml
-    type: OpenAPI
-  - url: collections/audd.postman_collection.json
-    type: PostmanCollection
-  - url: collections/audd.opencollection.json
-    type: OpenCollection
-  description: Identifies music from an audio file upload, a remote audio/video URL,
-    or base64-encoded audio. Returns artist, title, album, release date, label, timecode,
-    and optional metadata from Apple Music, Spotify, Deezer, Napster, and MusicBrainz.
-- aid: audd:recognize-with-offset
-  name: AudD Recognize with Offset API
-  tags:
-  - Music Recognition
-  - Offset
-  - Timecode
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://docs.audd.io/
-  baseURL: https://api.audd.io
-  properties:
-  - url: https://docs.audd.io/
-    type: Documentation
-  - url: openapi/audd-openapi.yml
-    type: OpenAPI
-  - url: collections/audd.postman_collection.json
-    type: PostmanCollection
-  - url: collections/audd.opencollection.json
-    type: OpenCollection
-  description: Recognition variant that returns the offset (position) of the matched
-    fragment within the submitted audio, also used as the method for recognition by
-    humming or singing a melody.
-- aid: audd:humming-recognition
-  name: AudD Humming Recognition API
-  tags:
-  - Humming
-  - Music Recognition
-  - Melody
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://docs.audd.io/
-  baseURL: https://api.audd.io
-  properties:
-  - url: https://docs.audd.io/
-    type: Documentation
-  - url: openapi/audd-openapi.yml
-    type: OpenAPI
-  - url: collections/audd.postman_collection.json
-    type: PostmanCollection
-  - url: collections/audd.opencollection.json
-    type: OpenCollection
-  description: Identifies a song from a recording of a person humming or singing the
-    melody, delivered through the recognizeWithOffset method against the AudD humming
-    database.
-- aid: audd:enterprise-file-scan
-  name: AudD Enterprise File Scan API
-  tags:
-  - Enterprise
-  - File Scan
-  - Long Audio
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://docs.audd.io/enterprise/
-  baseURL: https://enterprise.audd.io
-  properties:
-  - url: https://docs.audd.io/enterprise/
-    type: Documentation
-  - url: openapi/audd-openapi.yml
-    type: OpenAPI
-  - url: collections/audd.postman_collection.json
-    type: PostmanCollection
-  - url: collections/audd.opencollection.json
-    type: OpenCollection
-  description: Enterprise endpoint that scans hours- or days-long audio and video files
-    in 12-second chunks, returning every matched song with timecodes, offsets, and
-    detailed metadata. Supports skip, every, limit, and accurate_offsets controls.
-- aid: audd:lyrics
+- aid: audd:audd-lyrics-api
   name: AudD Lyrics API
+  description: The Lyrics API from AudD — 1 operation(s) for lyrics.
+  humanURL: https://docs.audd.io/
+  baseURL: https://api.audd.io
   tags:
   - Lyrics
-  - Search
-  - Metadata
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  properties:
+  - type: OpenAPI
+    url: openapi/audd-lyrics-api-openapi.yml
+  - type: Documentation
+    url: https://docs.audd.io/
+  - type: APIReference
+    url: https://docs.audd.io/#recognize
+  - type: PostmanCollection
+    url: collections/audd.postman_collection.json
+  - type: OpenCollection
+    url: collections/audd.opencollection.json
+  - type: Documentation
+    url: https://docs.audd.io/enterprise/
+- aid: audd:audd-recognition-api
+  name: AudD Recognition API
+  description: The Recognition API from AudD — 2 operation(s) for recognition.
   humanURL: https://docs.audd.io/
   baseURL: https://api.audd.io
+  tags:
+  - Recognition
   properties:
-  - url: https://docs.audd.io/
-    type: Documentation
-  - url: openapi/audd-openapi.yml
-    type: OpenAPI
-  - url: collections/audd.postman_collection.json
-    type: PostmanCollection
-  - url: collections/audd.opencollection.json
-    type: OpenCollection
-  description: Searches for song lyrics by title, artist, or an excerpt of the lyrics
-    via the findLyrics method, returning matching songs with full lyrics and metadata.
+  - type: OpenAPI
+    url: openapi/audd-recognition-api-openapi.yml
+  - type: Documentation
+    url: https://docs.audd.io/
+  - type: APIReference
+    url: https://docs.audd.io/#recognize
+  - type: PostmanCollection
+    url: collections/audd.postman_collection.json
+  - type: OpenCollection
+    url: collections/audd.opencollection.json
+  - type: Documentation
+    url: https://docs.audd.io/enterprise/
 common:
 - type: AgenticAccess
   url: agentic-access/audd-agentic-access.yml
