@@ -1,0 +1,16 @@
+{
+  "provider": "audd",
+  "sources": [
+    "audd-lyrics-api-openapi.yml",
+    "audd-recognition-api-openapi.yml"
+  ],
+  "outputs": [
+    "audd-lyrics-api-openapi.yml",
+    "audd-recognition-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
