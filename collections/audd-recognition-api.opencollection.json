@@ -1,0 +1,56 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AudD Music Lyrics Recognition API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "api_token",
+      "value": "{{api_token}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Recognition",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Recognize music from a file, URL, or base64 audio",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/",
+            "body": {
+              "type": "form-urlencoded",
+              "data": []
+            }
+          },
+          "docs": "Identifies a song from a short audio sample. Provide the audio as a multipart file upload, a remote `url`, or a base64-encoded `audio` string. Returns matched track metadata and, optionally, links to streaming services."
+        },
+        {
+          "info": {
+            "name": "Recognize music and return the offset of the match",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/recognizeWithOffset/",
+            "body": {
+              "type": "form-urlencoded",
+              "data": []
+            }
+          },
+          "docs": "Recognition variant that returns the offset (position) of the matched fragment within the submitted audio. This is also the method used for recognition by humming or singing a melody."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

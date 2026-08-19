@@ -1,0 +1,169 @@
+{
+  "item": [
+    {
+      "id": "9fbe3860-a578-4986-880f-1ca4a653f680",
+      "name": "Lyrics",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "c24b8eec-c244-41dd-9b14-b1f7655c3f64",
+          "name": "Search for song lyrics",
+          "request": {
+            "name": "Search for song lyrics",
+            "description": {
+              "content": "Searches for songs and their lyrics by title and artist or by an excerpt of the lyrics, using the `q` query parameter.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "findLyrics",
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "disabled": false,
+                  "key": "api_token",
+                  "value": "<string>",
+                  "description": "(Required) Your AudD API token."
+                },
+                {
+                  "disabled": false,
+                  "key": "q",
+                  "value": "<string>",
+                  "description": "(Required) Search query - a song title and artist, or an excerpt from the lyrics."
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "5d6d290e-dd98-47c5-8aa9-aeb0b9be498f",
+              "name": "Lyrics search result",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "findLyrics",
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_token",
+                      "value": "<API Key>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "disabled": false,
+                      "description": {
+                        "content": "(Required) Your AudD API token.",
+                        "type": "text/plain"
+                      },
+                      "key": "api_token",
+                      "value": "<string>"
+                    },
+                    {
+                      "disabled": false,
+                      "description": {
+                        "content": "(Required) Search query - a song title and artist, or an excerpt from the lyrics.",
+                        "type": "text/plain"
+                      },
+                      "key": "q",
+                      "value": "<string>"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"result\": [\n    {\n      \"song_id\": \"string\",\n      \"artist\": \"string\",\n      \"title\": \"string\",\n      \"lyrics\": \"string\",\n      \"media\": \"string\",\n      \"full_title\": \"string\"\n    },\n    {\n      \"song_id\": \"string\",\n      \"artist\": \"string\",\n      \"title\": \"string\",\n      \"lyrics\": \"string\",\n      \"media\": \"string\",\n      \"full_title\": \"string\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.audd.io",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "api_token"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "query"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "2df69513-1019-418d-b89b-e38cb096dd8e",
+    "name": "AudD Music Recognition Lyrics API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "AudD is a music recognition service. The API identifies songs from an uploaded audio file, a remote audio/video URL, or base64-encoded audio and returns rich track metadata. It also supports recognition with offset (including humming/singing) and lyrics search. All methods authenticate with an `api_token` and accept either form-encoded or multipart/form-data input.\n\nContact Support:\n Name: AudD Support\n Email: api@audd.io",
+      "type": "text/plain"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AudD Music Recognition Lyrics API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "api_token",
+      "value": "{{api_token}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Lyrics",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Search for song lyrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/findLyrics/",
+            "body": {
+              "type": "form-urlencoded",
+              "data": []
+            }
+          },
+          "docs": "Searches for songs and their lyrics by title and artist or by an excerpt of the lyrics, using the `q` query parameter."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
