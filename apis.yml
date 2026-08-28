@@ -7,6 +7,18 @@ description: AudD is a music recognition service that identifies songs from audi
   rich track metadata (artist, title, album, ISRC, links to Apple Music, Spotify,
   Deezer and more), supports recognition by humming/singing, lyrics search, and an
   enterprise endpoint for scanning long audio and video files.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: open
