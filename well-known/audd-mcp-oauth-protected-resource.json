@@ -1,0 +1,1 @@
+{"resource":"https://mcp.audd.io","authorization_servers":["https://dashboard-api.audd.io"],"scopes_supported":["account:read","usage:read","billing:read","billing:pay","token:read","token:write","profile:read","api:request","openid","email"],"bearer_methods_supported":["header"],"resource_name":"AudD Billing & Usage API","resource_documentation":"https://docs.audd.io/"}

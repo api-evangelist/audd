@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: AudD Music Lyrics Recognition API
+  title: AudD Music Recognition API
   description: AudD is a music recognition service. The API identifies songs from an uploaded audio file, a remote audio/video URL, or base64-encoded audio and returns rich track metadata. It also supports recognition with offset (including humming/singing) and lyrics search. All methods authenticate with an `api_token` and accept either form-encoded or multipart/form-data input.
   termsOfService: https://audd.io/terms/
   contact:
@@ -66,6 +66,18 @@ paths:
                 $ref: '#/components/schemas/RecognizeResponse'
 components:
   schemas:
+    RecognizeResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: '`success` or `error`.'
+          example: success
+        result:
+          oneOf:
+          - $ref: '#/components/schemas/Track'
+          - type: 'null'
+          description: The matched track, or null when nothing is recognized.
     Track:
       type: object
       properties:
@@ -107,18 +119,6 @@ components:
           type: object
           additionalProperties: true
           description: Spotify metadata when requested via the `return` parameter.
-    RecognizeResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          description: '`success` or `error`.'
-          example: success
-        result:
-          oneOf:
-          - $ref: '#/components/schemas/Track'
-          - type: 'null'
-          description: The matched track, or null when nothing is recognized.
     RecognizeRequest:
       type: object
       properties:
