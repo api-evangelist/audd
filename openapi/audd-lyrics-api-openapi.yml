@@ -43,6 +43,18 @@ paths:
                 $ref: '#/components/schemas/FindLyricsResponse'
 components:
   schemas:
+    FindLyricsRequest:
+      type: object
+      properties:
+        api_token:
+          type: string
+          description: Your AudD API token.
+        q:
+          type: string
+          description: Search query - a song title and artist, or an excerpt from the lyrics.
+      required:
+      - api_token
+      - q
     FindLyricsResponse:
       type: object
       properties:
@@ -66,18 +78,6 @@ components:
                 type: string
               full_title:
                 type: string
-    FindLyricsRequest:
-      type: object
-      properties:
-        api_token:
-          type: string
-          description: Your AudD API token.
-        q:
-          type: string
-          description: Search query - a song title and artist, or an excerpt from the lyrics.
-      required:
-      - api_token
-      - q
   securitySchemes:
     api_token:
       type: apiKey
