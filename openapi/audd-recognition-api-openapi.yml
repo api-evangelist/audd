@@ -66,18 +66,33 @@ paths:
                 $ref: '#/components/schemas/RecognizeResponse'
 components:
   schemas:
-    RecognizeResponse:
+    RecognizeRequest:
       type: object
       properties:
-        status:
+        api_token:
           type: string
-          description: '`success` or `error`.'
-          example: success
-        result:
-          oneOf:
-          - $ref: '#/components/schemas/Track'
-          - type: 'null'
-          description: The matched track, or null when nothing is recognized.
+          description: Your AudD API token.
+        url:
+          type: string
+          format: uri
+          description: HTTP URL of an audio file or a webpage/video containing audio to be recognized. Use instead of `file`.
+        file:
+          type: string
+          format: binary
+          description: Audio file uploaded via multipart/form-data. Use instead of `url`.
+        audio:
+          type: string
+          description: Base64-encoded audio (limited support). Alternative to `file`/`url`.
+        return:
+          type: string
+          description: Comma-separated list of additional metadata providers to include, e.g. `apple_music,spotify,deezer,napster,musicbrainz`.
+          example: apple_music,spotify
+        market:
+          type: string
+          description: Two-letter country code for Apple Music / iTunes / Spotify results.
+          default: us
+      required:
+      - api_token
     Track:
       type: object
       properties:
@@ -119,33 +134,18 @@ components:
           type: object
           additionalProperties: true
           description: Spotify metadata when requested via the `return` parameter.
-    RecognizeRequest:
+    RecognizeResponse:
       type: object
       properties:
-        api_token:
+        status:
           type: string
-          description: Your AudD API token.
-        url:
-          type: string
-          format: uri
-          description: HTTP URL of an audio file or a webpage/video containing audio to be recognized. Use instead of `file`.
-        file:
-          type: string
-          format: binary
-          description: Audio file uploaded via multipart/form-data. Use instead of `url`.
-        audio:
-          type: string
-          description: Base64-encoded audio (limited support). Alternative to `file`/`url`.
-        return:
-          type: string
-          description: Comma-separated list of additional metadata providers to include, e.g. `apple_music,spotify,deezer,napster,musicbrainz`.
-          example: apple_music,spotify
-        market:
-          type: string
-          description: Two-letter country code for Apple Music / iTunes / Spotify results.
-          default: us
-      required:
-      - api_token
+          description: '`success` or `error`.'
+          example: success
+        result:
+          oneOf:
+          - $ref: '#/components/schemas/Track'
+          - type: 'null'
+          description: The matched track, or null when nothing is recognized.
   securitySchemes:
     api_token:
       type: apiKey
