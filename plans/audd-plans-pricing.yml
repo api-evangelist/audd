@@ -4,14 +4,13 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: AudD
 providerId: audd
 created: '2026-06-21'
-modified: '2026-06-21'
+modified: '2026-10-08'
 reconciled: true
 tags:
 - Music
 - Music Recognition
 - Audio
 - Fingerprinting
-- Lyrics
 - Plans
 description: >-
   AudD uses a usage-based pricing model. New accounts get 300 free recognition
@@ -60,8 +59,6 @@ plans:
   elements:
   - name: Music Recognition
   - name: Recognize with Offset
-  - name: Humming Recognition
-  - name: Lyrics
 - id: audd-pay-as-you-go
   name: Pay-as-you-go
   type: usage
@@ -112,8 +109,6 @@ plans:
   elements:
   - name: Music Recognition
   - name: Recognize with Offset
-  - name: Humming Recognition
-  - name: Lyrics
   - name: Enterprise File Scan
 - id: audd-streams
   name: Audio Stream Monitoring

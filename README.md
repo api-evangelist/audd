@@ -64,7 +64,7 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-AudD is a music recognition service that identifies songs from audio files, URLs, or microphone input via a simple REST API. The api.audd.io API returns rich track metadata (artist, title, album, ISRC, links to Apple Music, Spotify, Deezer and more), supports recognition by humming/singing, lyrics search, and an enterprise endpoint for scanning long audio and video files.
+AudD is a music recognition service. Its REST API identifies songs from short audio clips, uploaded files or URLs on api.audd.io, scans audio and video files of any length on the enterprise endpoint (enterprise.audd.io), monitors live audio streams with results delivered by callback or longpoll, and adds an account's own tracks to a custom catalog (special access). Matches return track metadata (artist, title, album, ISRC) with optional Apple Music, Spotify, Deezer and MusicBrainz data.
 
 **APIs.json:** [https://raw.githubusercontent.com/api-evangelist/audd/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/audd/refs/heads/main/apis.yml)
 
@@ -74,122 +74,81 @@ AudD is a music recognition service that identifies songs from audio files, URLs
 - Music Recognition
 - Audio
 - Fingerprinting
-- Lyrics
 
 ## Timestamps
 
 - **Created:** 2026-06-21
-- **Modified:** 2026-06-21
+- **Modified:** 2026-10-08
 
 ## APIs
 
-### AudD Music Recognition API
+### AudD Recognition API
 
-Identifies music from an audio file upload, a remote audio/video URL, or base64-encoded audio. Returns artist, title, album, release date, label, timecode, and optional metadata from Apple Music, Spotify, Deezer, Napster, and MusicBrainz.
+Music recognition from a short clip, file or URL (api.audd.io), and the enterprise endpoint for audio and video files of any length (enterprise.audd.io).
 
 - **Human URL:** [https://docs.audd.io/](https://docs.audd.io/)
 - **Base URL:** `https://api.audd.io`
 
 #### Tags
 
-- Music Recognition
-- Audio
-- Fingerprinting
+- Recognition
 
 #### Properties
 
+- [OpenAPI](openapi/audd-recognition-api-openapi.yml)
 - [Documentation](https://docs.audd.io/)
 - [API Reference](https://docs.audd.io/#recognize)
-- [OpenAPI](openapi/audd-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/audd.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/audd.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### AudD Recognize with Offset API
-
-Recognition variant that returns the offset (position) of the matched fragment within the submitted audio, also used as the method for recognition by humming or singing a melody.
-
-- **Human URL:** [https://docs.audd.io/](https://docs.audd.io/)
-- **Base URL:** `https://api.audd.io`
-
-#### Tags
-
-- Music Recognition
-- Offset
-- Timecode
-
-#### Properties
-
-- [Documentation](https://docs.audd.io/)
-- [OpenAPI](openapi/audd-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/audd.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/audd.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### AudD Humming Recognition API
-
-Identifies a song from a recording of a person humming or singing the melody, delivered through the recognizeWithOffset method against the AudD humming database.
-
-- **Human URL:** [https://docs.audd.io/](https://docs.audd.io/)
-- **Base URL:** `https://api.audd.io`
-
-#### Tags
-
-- Humming
-- Music Recognition
-- Melody
-
-#### Properties
-
-- [Documentation](https://docs.audd.io/)
-- [OpenAPI](openapi/audd-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/audd.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/audd.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### AudD Enterprise File Scan API
-
-Enterprise endpoint that scans hours- or days-long audio and video files in 12-second chunks, returning every matched song with timecodes, offsets, and detailed metadata. Supports skip, every, limit, and accurate_offsets controls.
-
-- **Human URL:** [https://docs.audd.io/enterprise/](https://docs.audd.io/enterprise/)
-- **Base URL:** `https://enterprise.audd.io`
-
-#### Tags
-
-- Enterprise
-- File Scan
-- Long Audio
-
-#### Properties
-
 - [Documentation](https://docs.audd.io/enterprise/)
-- [OpenAPI](openapi/audd-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/audd.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/audd.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Postman Collection](collections/audd-recognition-api.postman_collection.json)
+- [Open Collection](collections/audd-recognition-api.opencollection.json)
 
-### AudD Lyrics API
+### AudD Custom Catalog API
 
-Searches for song lyrics by title, artist, or an excerpt of the lyrics via the findLyrics method, returning matching songs with full lyrics and metadata.
+Add your own tracks to a custom recognition catalog (special access).
 
 - **Human URL:** [https://docs.audd.io/](https://docs.audd.io/)
 - **Base URL:** `https://api.audd.io`
 
 #### Tags
 
-- Lyrics
-- Search
-- Metadata
+- Custom catalog
 
 #### Properties
 
-- [Documentation](https://docs.audd.io/)
-- [OpenAPI](openapi/audd-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/audd.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/audd.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [OpenAPI](openapi/audd-custom-catalog-api-openapi.yml)
+- [Documentation](https://docs.audd.io/upload_audio_endpoint/)
+- [Postman Collection](collections/audd-custom-catalog-api.postman_collection.json)
+- [Open Collection](collections/audd-custom-catalog-api.opencollection.json)
+
+### AudD Streams API
+
+Live audio stream monitoring - add and manage streams, with recognition results delivered by callback URL or longpoll.
+
+- **Human URL:** [https://docs.audd.io/](https://docs.audd.io/)
+- **Base URL:** `https://api.audd.io`
+
+#### Tags
+
+- Streams
+
+#### Properties
+
+- [OpenAPI](openapi/audd-streams-api-openapi.yml)
+- [Documentation](https://docs.audd.io/streams/)
+- [Postman Collection](collections/audd-streams-api.postman_collection.json)
+- [Open Collection](collections/audd-streams-api.opencollection.json)
 
 ## Common Properties
 
-- [GitHub Organization](https://github.com/AudDMusic)
-- [LinkedIn](https://www.linkedin.com/company/audd-io)
+- [Agentic Access](agentic-access/audd-agentic-access.yml)
+- [Domain Security](security/audd-domain-security.yml)
+- [Authentication](authentication/audd-authentication.yml)
+- [Git Hub Organization](https://github.com/AudDMusic)
+- [Linked In](https://www.linkedin.com/company/audd-io)
 - [Website](https://audd.io/)
 - [Documentation](https://docs.audd.io/)
+- [Well Known](well-known/audd-well-known.yml)
+- [APICatalog](https://audd.io/.well-known/api-catalog)
 - [Plans](plans/audd-plans-pricing.yml)
 - [Rate Limits](rate-limits/audd-rate-limits.yml)
 - [Fin Ops](finops/audd-finops.yml)

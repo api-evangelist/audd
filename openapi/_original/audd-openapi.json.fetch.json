@@ -1,0 +1,12 @@
+{
+ "url": "https://audd.io/openapi.json",
+ "requested_url": "https://audd.io/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 58463,
+ "sha256": "5105a4302a0ea122978bbb3997abae4c24e421e3c587946df39c28165b8524c5",
+ "fetched_at": "2026-10-08",
+ "fetched_by": "hand (correction request 2026-10-07)",
+ "match": "byte-identical",
+ "note": "The provider's own contract, named by AudD (api@audd.io) on 2026-10-07 and listed as service-desc in https://audd.io/.well-known/api-catalog. It replaces a pipeline-written 3.0.1 document that had been archived here and that AudD said was not theirs."
+}

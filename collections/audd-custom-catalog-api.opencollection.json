@@ -1,0 +1,62 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AudD Music Recognition Custom catalog API",
+    "version": "1.4.4"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "api_token",
+      "value": "{{api_token}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Custom catalog",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Add a song to the caller's private fingerprint catalog (NOT for music…",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/upload/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "audio_id",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "url",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "⚠ **This is NOT how you submit audio for music recognition.** For\nrecognition, use `POST /` (or `POST enterprise.audd.io/` to scan\nbeyond the first 12 seconds of a file). This endpoint adds a song to the caller's\nprivate fingerprint catalog so AudD can later identify it for the\ncaller's account only.\n\nRequires special access — contact api@audd.io to enable.\n\nCalling `upload` again with the same `audio_id` re-fingerprints that\nslot. There is no public list/delete endpoint; callers track\n`audio_id"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

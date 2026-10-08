@@ -1,0 +1,896 @@
+{
+  "item": [
+    {
+      "id": "44a81ede-3cc7-4aad-a47d-7789df443238",
+      "name": "Streams",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "894f5e5d-2193-454c-8656-f2fd94486dc7",
+          "name": "Configure where AudD POSTs stream-recognition callbacks",
+          "request": {
+            "name": "Configure where AudD POSTs stream-recognition callbacks",
+            "description": {},
+            "url": {
+              "path": [
+                "setCallbackUrl",
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "api_token",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                },
+                {
+                  "key": "url",
+                  "value": "<uri>",
+                  "type": "text",
+                  "description": "(Required) Where AudD POSTs callbacks. Set to `https://audd.tech/empty/`\nif you only want longpoll. The URL itself can carry a\n`?return=apple_music,deezer` parameter to receive that\nmetadata in callbacks.\n"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "3ac17fdb-b79c-4f90-ba2f-fc80a19a10c7",
+              "name": "Callback URL set or rejected.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "setCallbackUrl",
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "api_token",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Where AudD POSTs callbacks. Set to `https://audd.tech/empty/`\nif you only want longpoll. The URL itself can carry a\n`?return=apple_music,deezer` parameter to receive that\nmetadata in callbacks.\n",
+                        "type": "text/plain"
+                      },
+                      "key": "url",
+                      "value": "<uri>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"result\": null\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1f0f991e-a8dc-4aba-91df-26461a50c360",
+          "name": "Get the configured callback URL",
+          "request": {
+            "name": "Get the configured callback URL",
+            "description": {},
+            "url": {
+              "path": [
+                "getCallbackUrl",
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "api_token",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "e4cf585f-79c2-4e59-b04a-6a3d7a196764",
+              "name": "Returns the URL or — when no callback URL has ever been\nconfigured — error code 19 with message \"Internal error\".\n**The SDK uses this signal to short-circuit longpoll setup.**\n",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "getCallbackUrl",
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "api_token",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"externalValue\": \"https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_19_no_callback_url.json\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "57b7260f-5db4-471b-ac4a-36cb288a798a",
+          "name": "Add a stream for live recognition",
+          "request": {
+            "name": "Add a stream for live recognition",
+            "description": {},
+            "url": {
+              "path": [
+                "addStream",
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "api_token",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                },
+                {
+                  "key": "url",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) Stream URL — direct (DASH/Icecast/HLS/m3u/m3u8) or shortcut\n(`twitch:<channel>`, `youtube:<video_id>`, `youtube-ch:<channel_id>`).\n"
+                },
+                {
+                  "key": "radio_id",
+                  "value": "<integer>",
+                  "type": "text",
+                  "description": "(Required) Caller-supplied identifier; must be unique per account."
+                },
+                {
+                  "key": "callbacks",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "Set to `before` to receive callbacks at song start.\nDefault is callbacks at song end (with total play length).\n (This can only be one of before)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "bb1eaf4a-9f0f-42d5-b3f8-34750ba14bd8",
+              "name": "Stream added or rejected (e.g.,",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "addStream",
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "api_token",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Stream URL — direct (DASH/Icecast/HLS/m3u/m3u8) or shortcut\n(`twitch:<channel>`, `youtube:<video_id>`, `youtube-ch:<channel_id>`).\n",
+                        "type": "text/plain"
+                      },
+                      "key": "url",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Caller-supplied identifier; must be unique per account.",
+                        "type": "text/plain"
+                      },
+                      "key": "radio_id",
+                      "value": "<integer>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Set to `before` to receive callbacks at song start.\nDefault is callbacks at song end (with total play length).\n (This can only be one of before)",
+                        "type": "text/plain"
+                      },
+                      "key": "callbacks",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"externalValue\": \"https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_902_stream_limit.json\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "3380edcb-7231-46de-ae87-b19fccbabc4d",
+          "name": "List configured streams",
+          "request": {
+            "name": "List configured streams",
+            "description": {},
+            "url": {
+              "path": [
+                "getStreams",
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "api_token",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "9d106b75-7316-49f6-ab1c-32a619c5b387",
+              "name": "Returns the array of configured streams (may be empty).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "getStreams",
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "api_token",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"externalValue\": \"https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/getStreams_empty.json\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6c5d7263-8b93-4c8c-9ed0-08d150e81ec1",
+          "name": "Update an existing stream's URL",
+          "request": {
+            "name": "Update an existing stream's URL",
+            "description": {},
+            "url": {
+              "path": [
+                "setStreamUrl",
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "api_token",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                },
+                {
+                  "key": "radio_id",
+                  "value": "<integer>",
+                  "type": "text",
+                  "description": "(Required) "
+                },
+                {
+                  "key": "url",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "efa7a322-8fec-43f2-97e2-7860ffefcc11",
+              "name": "Stream URL updated or rejected.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "setStreamUrl",
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "api_token",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "radio_id",
+                      "value": "<integer>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "url",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"result\": null\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "819ca2be-8b89-4174-b475-2ab7cb34d099",
+          "name": "Delete a stream",
+          "request": {
+            "name": "Delete a stream",
+            "description": {},
+            "url": {
+              "path": [
+                "deleteStream",
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "api_token",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                },
+                {
+                  "key": "radio_id",
+                  "value": "<integer>",
+                  "type": "text",
+                  "description": "(Required) "
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "0d67d7f7-adad-450a-9530-d120fd441b26",
+              "name": "Stream deleted or rejected.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "deleteStream",
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "api_token",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "radio_id",
+                      "value": "<integer>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"result\": null\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1a613a91-ae83-4328-8bd2-344f857df81e",
+          "name": "Long-poll for new recognition events on a category",
+          "request": {
+            "name": "Long-poll for new recognition events on a category",
+            "description": {
+              "content": "Long-polls for new recognition events. The category can be derived\nlocally from the api_token + radio_id, or read from the\n`longpoll_category` field of `getStreams`.\n\n**Important DX caveat:** when no callback URL is configured for the\naccount (which the server signals via error #19 from `getCallbackUrl`),\nlongpoll silently returns timeout responses forever — events never\nfire. Every official SDK preflights `getCallbackUrl` and raises a\ndescriptive error if no callback URL is set. The check is bypassable\nvia a `skip_callback_check` flag.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "longpoll",
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "category",
+                  "value": "<string>",
+                  "description": "(Required) 9-char longpoll category — `longpoll_category` from `getStreams` or MD5(MD5(api_token)+str(radio_id))[:9]."
+                },
+                {
+                  "disabled": false,
+                  "key": "timeout",
+                  "value": "50",
+                  "description": "Seconds to wait for events before returning the timeout response."
+                },
+                {
+                  "disabled": false,
+                  "key": "since_time",
+                  "value": "<integer>",
+                  "description": "Server timestamp (ms) returned in the previous response — used to deduplicate events."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "add0f907-2b5a-40b2-aa87-5141626b683f",
+              "name": "Either a timeout response (no events) or an event response (one\nor more new recognitions/notifications).\n",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "longpoll",
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "category",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": "50"
+                    },
+                    {
+                      "key": "since_time",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"externalValue\": \"https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/longpoll_no_events.json\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.audd.io",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "api_token"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "916f5028-f5dd-4780-b2dc-b368db7f49f7",
+    "name": "AudD Music Recognition Streams API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The AudD music recognition API identifies songs from short audio clips\n(`api.audd.io/`), large audio/video files (`enterprise.audd.io/`), and\nreal-time audio streams (callback or longpoll based on `api.audd.io/`).\n\nThis OpenAPI document is the canonical contract for the API. Every\nofficial AudD SDK validates its parser against the fixtures shipped\nalongside this spec.\n\nDocumentation: https://docs.audd.io\nGet an api_token: https://dashboard.audd.io\nSupport: api@audd.io\n\nContact Support:\n Name: AudD API Support\n Email: api@audd.io",
+      "type": "text/plain"
+    }
+  }
+}

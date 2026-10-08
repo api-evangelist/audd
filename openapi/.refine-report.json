@@ -1,24 +1,23 @@
 {
   "provider": "audd",
   "sources": [
-    "_original/audd-openapi.yml"
+    "_original/audd-openapi.json"
   ],
   "outputs": [
-    "audd-lyrics-api-openapi.yml",
-    "audd-recognition-api-openapi.yml"
+    "audd-custom-catalog-api-openapi.yml",
+    "audd-recognition-api-openapi.yml",
+    "audd-streams-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
-    "audd-openapi.yml: upgraded openapi 3.0.1 -> OpenAPI 3.2.0",
-    "audd-openapi.yml: declared missing tag: Lyrics",
-    "audd-openapi.yml: declared missing tag: Recognition",
-    "apis.yml register: already-registered"
+    "audd-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "audd-openapi.json: declared missing tag: Custom catalog",
+    "audd-openapi.json: declared missing tag: Recognition",
+    "audd-openapi.json: declared missing tag: Streams",
+    "apis.yml register: written (+2 apis, 3 total)"
   ],
-  "skipped": [
-    "audd-lyrics-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "audd-recognition-api-openapi.yml: previously refined output, superseded by openapi/_original/"
-  ]
+  "skipped": []
 }

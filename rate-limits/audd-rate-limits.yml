@@ -4,14 +4,13 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: AudD
 providerId: audd
 created: '2026-06-21'
-modified: '2026-06-21'
+modified: '2026-10-08'
 reconciled: false
 tags:
 - Music
 - Music Recognition
 - Audio
 - Fingerprinting
-- Lyrics
 - Rate Limiting
 - Quotas
 - Throttling
@@ -31,7 +30,8 @@ sources:
 - https://docs.audd.io/enterprise/
 - https://audd.io/
 responseCodes:
-  throttled: 429
+  throttled: 200
+  throttledBody: 'HTTP 200 with a JSON body {"status": "error", "error": {"error_code": ..., "error_message": ...}}; AudD does not return HTTP 429'
 limits:
 - name: Anonymous Requests Per Day
   scope: ip
@@ -57,7 +57,8 @@ policies:
 - name: Quota-Based Access
   description: Access is controlled by free allotment and purchased monthly request quotas rather than per-second throttling.
 - name: Backoff Strategy
-  description: Clients should implement retries with exponential backoff and honor any 429 responses.
+  description: >-
+    Errors, including rate-limit and quota errors, arrive as HTTP 200 with "status": "error" and a numeric error_code (AudD, 2026-10-07; ErrorResponse in https://audd.io/openapi.json). Check status on every response; back off on a limit error code rather than waiting for a 429, which AudD does not send.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

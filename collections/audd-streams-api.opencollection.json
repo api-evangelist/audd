@@ -1,0 +1,218 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AudD Music Recognition Streams API",
+    "version": "1.4.4"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "api_token",
+      "value": "{{api_token}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Streams",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Configure where AudD POSTs stream-recognition callbacks",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/setCallbackUrl/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "url",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Configure where AudD POSTs stream-recognition callbacks"
+        },
+        {
+          "info": {
+            "name": "Get the configured callback URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/getCallbackUrl/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Get the configured callback URL"
+        },
+        {
+          "info": {
+            "name": "Add a stream for live recognition",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/addStream/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "url",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "radio_id",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "callbacks",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Add a stream for live recognition"
+        },
+        {
+          "info": {
+            "name": "List configured streams",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/getStreams/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "List configured streams"
+        },
+        {
+          "info": {
+            "name": "Update an existing stream's URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/setStreamUrl/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "radio_id",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "url",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Update an existing stream's URL"
+        },
+        {
+          "info": {
+            "name": "Delete a stream",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.audd.io/deleteStream/",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "radio_id",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Delete a stream"
+        },
+        {
+          "info": {
+            "name": "Long-poll for new recognition events on a category",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.audd.io/longpoll/",
+            "params": [
+              {
+                "name": "category",
+                "value": "",
+                "type": "query",
+                "description": "9-char longpoll category — `longpoll_category` from `getStreams` or MD5(MD5(api_token)+str(radio_id))[:9]."
+              },
+              {
+                "name": "timeout",
+                "value": "",
+                "type": "query",
+                "description": "Seconds to wait for events before returning the timeout response."
+              },
+              {
+                "name": "since_time",
+                "value": "",
+                "type": "query",
+                "description": "Server timestamp (ms) returned in the previous response — used to deduplicate events."
+              }
+            ]
+          },
+          "docs": "Long-polls for new recognition events. The category can be derived\nlocally from the api_token + radio_id, or read from the\n`longpoll_category` field of `getStreams`.\n\n**Important DX caveat:** when no callback URL is configured for the\naccount (which the server signals via error #19 from `getCallbackUrl`),\nlongpoll silently returns timeout responses forever — events never\nfire. Every official SDK preflights `getCallbackUrl` and raises a\ndescriptive error if no callback URL is set. The check is by"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

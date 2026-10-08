@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "854cd3b4-8aa5-4a9e-a5af-421ff22e07ee",
+      "id": "8a779d4a-373d-4a07-9b64-38286630f257",
       "name": "Recognition",
       "description": {
         "content": "",
@@ -9,20 +9,23 @@
       },
       "item": [
         {
-          "id": "d432d366-34d5-46e6-a326-b46235af3841",
-          "name": "Recognize music from a file, URL, or base64 audio",
+          "id": "cfae2191-729c-431d-9a73-87aeca48c598",
+          "name": "Identify a song from an audio clip (the first 12 seconds are analyzed; ≤10 MB)",
           "request": {
-            "name": "Recognize music from a file, URL, or base64 audio",
+            "name": "Identify a song from an audio clip (the first 12 seconds are analyzed; ≤10 MB)",
             "description": {
-              "content": "Identifies a song from a short audio sample. Provide the audio as a multipart file upload, a remote `url`, or a base64-encoded `audio` string. Returns matched track metadata and, optionally, links to streaming services.",
+              "content": "Standard music recognition. Send a file directly (multipart) or pass\na URL the AudD server downloads.\n\nOnly the first 12 seconds of the audio are analyzed. To recognize music\nbeyond the first 12 seconds of a file, use the enterprise endpoint\n(`POST https://enterprise.audd.io/`), which scans the whole file.",
               "type": "text/plain"
             },
             "url": {
+              "protocol": "https",
               "path": [
                 ""
               ],
               "host": [
-                "{{baseUrl}}"
+                "api",
+                "audd",
+                "io"
               ],
               "query": [],
               "variable": []
@@ -30,7 +33,7 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
+                "value": "multipart/form-data"
               },
               {
                 "key": "Accept",
@@ -40,68 +43,73 @@
             "method": "POST",
             "auth": null,
             "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
+              "mode": "formdata",
+              "formdata": [
                 {
-                  "disabled": false,
                   "key": "api_token",
                   "value": "<string>",
-                  "description": "(Required) Your AudD API token."
+                  "type": "text",
+                  "description": "(Required) From https://dashboard.audd.io."
                 },
                 {
-                  "disabled": false,
                   "key": "url",
                   "value": "<uri>",
-                  "description": "HTTP URL of an audio file or a webpage/video containing audio to be recognized. Use instead of `file`."
+                  "type": "text",
+                  "description": "HTTPS URL of the audio file. One of `url`, `file`, or `audio` is required."
                 },
                 {
-                  "disabled": false,
                   "key": "file",
-                  "value": "<binary>",
-                  "description": "Audio file uploaded via multipart/form-data. Use instead of `url`."
+                  "type": "file",
+                  "description": "Multipart file upload. One of `url`, `file`, or `audio` is required."
                 },
                 {
-                  "disabled": false,
                   "key": "audio",
                   "value": "<string>",
-                  "description": "Base64-encoded audio (limited support). Alternative to `file`/`url`."
+                  "type": "text",
+                  "description": "Base64-encoded audio. Discouraged; limited support."
                 },
                 {
-                  "disabled": false,
                   "key": "return",
                   "value": "<string>",
-                  "description": "Comma-separated list of additional metadata providers to include, e.g. `apple_music,spotify,deezer,napster,musicbrainz`."
+                  "type": "text",
+                  "description": "Comma-separated metadata identifiers. Valid values:\n`apple_music`, `spotify`, `deezer`, `napster`, `musicbrainz`.\n"
                 },
                 {
-                  "disabled": false,
                   "key": "market",
-                  "value": "us",
-                  "description": "Two-letter country code for Apple Music / iTunes / Spotify results."
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "ISO country code for Apple Music / iTunes / Spotify regional results. Default `us`."
                 }
               ]
             }
           },
           "response": [
             {
-              "id": "658b704e-05d3-4403-a34c-9940b25fa01f",
-              "name": "Recognition result",
+              "id": "f2fd0d86-6c0c-45a6-8d54-8e084784bf95",
+              "name": "Recognition processed. The response is a `success` payload (with\n`result` either populated or null when no match was found) or an\n`error` payload.\n",
               "originalRequest": {
                 "url": {
+                  "protocol": "https",
                   "path": [
                     ""
                   ],
                   "host": [
-                    "{{baseUrl}}"
+                    "api",
+                    "audd",
+                    "io"
                   ],
-                  "query": [
-                    {
-                      "key": "api_token",
-                      "value": "<API Key>"
-                    }
-                  ],
+                  "query": [],
                   "variable": []
                 },
                 "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
                   {
                     "key": "Accept",
                     "value": "application/json"
@@ -109,61 +117,61 @@
                 ],
                 "method": "POST",
                 "body": {
-                  "mode": "urlencoded",
-                  "urlencoded": [
+                  "mode": "formdata",
+                  "formdata": [
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "(Required) Your AudD API token.",
+                        "content": "(Required) From https://dashboard.audd.io.",
                         "type": "text/plain"
                       },
                       "key": "api_token",
-                      "value": "<string>"
+                      "value": "<string>",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "HTTP URL of an audio file or a webpage/video containing audio to be recognized. Use instead of `file`.",
+                        "content": "HTTPS URL of the audio file. One of `url`, `file`, or `audio` is required.",
                         "type": "text/plain"
                       },
                       "key": "url",
-                      "value": "<uri>"
+                      "value": "<uri>",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "Audio file uploaded via multipart/form-data. Use instead of `url`.",
+                        "content": "Multipart file upload. One of `url`, `file`, or `audio` is required.",
                         "type": "text/plain"
                       },
                       "key": "file",
-                      "value": "<binary>"
+                      "value": "<binary>",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "Base64-encoded audio (limited support). Alternative to `file`/`url`.",
+                        "content": "Base64-encoded audio. Discouraged; limited support.",
                         "type": "text/plain"
                       },
                       "key": "audio",
-                      "value": "<string>"
+                      "value": "<string>",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "Comma-separated list of additional metadata providers to include, e.g. `apple_music,spotify,deezer,napster,musicbrainz`.",
+                        "content": "Comma-separated metadata identifiers. Valid values:\n`apple_music`, `spotify`, `deezer`, `napster`, `musicbrainz`.\n",
                         "type": "text/plain"
                       },
                       "key": "return",
-                      "value": "apple_music,spotify"
+                      "value": "apple_music,spotify",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "Two-letter country code for Apple Music / iTunes / Spotify results.",
+                        "content": "ISO country code for Apple Music / iTunes / Spotify regional results. Default `us`.",
                         "type": "text/plain"
                       },
                       "key": "market",
-                      "value": "us"
+                      "value": "us",
+                      "type": "text"
                     }
                   ]
                 }
@@ -176,7 +184,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"status\": \"success\",\n  \"result\": {\n    \"artist\": \"Imagine Dragons\",\n    \"title\": \"Believer\",\n    \"album\": \"Evolve\",\n    \"release_date\": \"2017-02-01\",\n    \"label\": \"Interscope Records\",\n    \"timecode\": \"00:42\",\n    \"offset\": \"string\",\n    \"song_link\": \"https://lis.tn/Believer\",\n    \"isrc\": \"USUM71700626\",\n    \"apple_music\": {\n      \"key_0\": true,\n      \"key_1\": 1331,\n      \"key_2\": 7579.640601806872\n    },\n    \"spotify\": {\n      \"key_0\": \"string\"\n    }\n  }\n}",
+              "body": "{\n  \"summary\": \"Public-DB match with apple_music + spotify + musicbrainz return\",\n  \"externalValue\": \"https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_with_metadata.json\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -187,21 +195,147 @@
           }
         },
         {
-          "id": "a2a0abcf-9b55-4fc6-9ef4-265e6ae6ad6d",
-          "name": "Recognize music and return the offset of the match",
+          "id": "846abf95-0a06-47c2-8b36-c0f580d9bc85",
+          "name": "Same as POST recognize, but with parameters in the query string",
           "request": {
-            "name": "Recognize music and return the offset of the match",
+            "name": "Same as POST recognize, but with parameters in the query string",
             "description": {
-              "content": "Recognition variant that returns the offset (position) of the matched fragment within the submitted audio. This is also the method used for recognition by humming or singing a melody.",
+              "content": "GET form of `/`. Useful for quick tests in a browser; POST is preferred.",
               "type": "text/plain"
             },
             "url": {
+              "protocol": "https",
               "path": [
-                "recognizeWithOffset",
                 ""
               ],
               "host": [
-                "{{baseUrl}}"
+                "api",
+                "audd",
+                "io"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "api_token",
+                  "value": "<string>",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "key": "url",
+                  "value": "<uri>"
+                },
+                {
+                  "disabled": false,
+                  "key": "return",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "market",
+                  "value": "<string>"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5faccf5a-5204-457f-a16c-0f3bb39e0d02",
+              "name": "Same shapes as POST.",
+              "originalRequest": {
+                "url": {
+                  "protocol": "https",
+                  "path": [
+                    ""
+                  ],
+                  "host": [
+                    "api",
+                    "audd",
+                    "io"
+                  ],
+                  "query": [
+                    {
+                      "key": "api_token",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "url",
+                      "value": "<uri>"
+                    },
+                    {
+                      "key": "return",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "market",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"externalValue\": \"https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_with_metadata.json\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "25d5e2bc-7264-4ab5-a59c-816b8928277b",
+          "name": "Recognize music in large audio/video files (hours- or days-long)",
+          "request": {
+            "name": "Recognize music in large audio/video files (hours- or days-long)",
+            "description": {
+              "content": "Enterprise endpoint. Send an HTTPS URL or a multipart file (streamed,\nno in-memory buffering needed). The endpoint chunks the audio into\n12-second segments and counts each scanned chunk as 1 request.\n\nSDKs default to a 1-hour read timeout for this endpoint and enable TCP\nkeepalive on the transport.",
+              "type": "text/plain"
+            },
+            "url": {
+              "protocol": "https",
+              "path": [
+                "enterprise",
+                ""
+              ],
+              "host": [
+                "enterprise",
+                "audd",
+                "io"
               ],
               "query": [],
               "variable": []
@@ -209,7 +343,7 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
+                "value": "multipart/form-data"
               },
               {
                 "key": "Accept",
@@ -219,69 +353,104 @@
             "method": "POST",
             "auth": null,
             "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
+              "mode": "formdata",
+              "formdata": [
                 {
-                  "disabled": false,
                   "key": "api_token",
                   "value": "<string>",
-                  "description": "(Required) Your AudD API token."
+                  "type": "text",
+                  "description": "(Required) "
                 },
                 {
-                  "disabled": false,
                   "key": "url",
                   "value": "<uri>",
-                  "description": "HTTP URL of an audio file or a webpage/video containing audio to be recognized. Use instead of `file`."
+                  "type": "text",
+                  "description": ""
                 },
                 {
-                  "disabled": false,
                   "key": "file",
-                  "value": "<binary>",
-                  "description": "Audio file uploaded via multipart/form-data. Use instead of `url`."
+                  "type": "file",
+                  "description": ""
                 },
                 {
-                  "disabled": false,
-                  "key": "audio",
-                  "value": "<string>",
-                  "description": "Base64-encoded audio (limited support). Alternative to `file`/`url`."
-                },
-                {
-                  "disabled": false,
                   "key": "return",
                   "value": "<string>",
-                  "description": "Comma-separated list of additional metadata providers to include, e.g. `apple_music,spotify,deezer,napster,musicbrainz`."
+                  "type": "text",
+                  "description": "Comma-separated metadata identifiers. Same as the standard\nendpoint — but **Spotify is NOT supported** on enterprise.\n"
                 },
                 {
-                  "disabled": false,
-                  "key": "market",
-                  "value": "us",
-                  "description": "Two-letter country code for Apple Music / iTunes / Spotify results."
+                  "key": "accurate_offsets",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "When 'true', return per-match start/end offsets within each 12-second chunk. (This can only be one of true,false)"
+                },
+                {
+                  "key": "skip",
+                  "value": "<integer>",
+                  "type": "text",
+                  "description": "Number of 12-second chunks to skip after each scanned chunk."
+                },
+                {
+                  "key": "every",
+                  "value": "<integer>",
+                  "type": "text",
+                  "description": "Number of consecutive chunks to scan."
+                },
+                {
+                  "key": "limit",
+                  "value": "<integer>",
+                  "type": "text",
+                  "description": "Upper bound on the number of chunks to recognize. **Always\nset this in dev/test environments to control cost.**\n"
+                },
+                {
+                  "key": "skip_first_seconds",
+                  "value": "<integer>",
+                  "type": "text",
+                  "description": ""
+                },
+                {
+                  "key": "use_timecode",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "When 'true', use the `t`/`time_continue`/`start` URL parameter\nof the source URL as `skip_first_seconds`. Mutually exclusive\nwith `skip_first_seconds`.\n (This can only be one of true,false)"
+                },
+                {
+                  "key": "response_type",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "Output format. Default json. (This can only be one of json,csv)"
                 }
               ]
             }
           },
           "response": [
             {
-              "id": "f8ba8e4e-28da-4071-baf0-573cf2d70cd7",
-              "name": "Recognition result with offset",
+              "id": "ba7881ae-6a7f-436a-80e8-4a17b5326684",
+              "name": "Recognition processed. JSON or CSV depending on `response_type`.",
               "originalRequest": {
                 "url": {
+                  "protocol": "https",
                   "path": [
-                    "recognizeWithOffset",
+                    "enterprise",
                     ""
                   ],
                   "host": [
-                    "{{baseUrl}}"
+                    "enterprise",
+                    "audd",
+                    "io"
                   ],
-                  "query": [
-                    {
-                      "key": "api_token",
-                      "value": "<API Key>"
-                    }
-                  ],
+                  "query": [],
                   "variable": []
                 },
                 "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "api_token",
+                    "value": "<API Key>"
+                  },
                   {
                     "key": "Accept",
                     "value": "application/json"
@@ -289,61 +458,106 @@
                 ],
                 "method": "POST",
                 "body": {
-                  "mode": "urlencoded",
-                  "urlencoded": [
+                  "mode": "formdata",
+                  "formdata": [
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "(Required) Your AudD API token.",
+                        "content": "(Required) ",
                         "type": "text/plain"
                       },
                       "key": "api_token",
-                      "value": "<string>"
+                      "value": "<string>",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "HTTP URL of an audio file or a webpage/video containing audio to be recognized. Use instead of `file`.",
+                        "content": "",
                         "type": "text/plain"
                       },
                       "key": "url",
-                      "value": "<uri>"
+                      "value": "<uri>",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "Audio file uploaded via multipart/form-data. Use instead of `url`.",
+                        "content": "",
                         "type": "text/plain"
                       },
                       "key": "file",
-                      "value": "<binary>"
+                      "value": "<binary>",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "Base64-encoded audio (limited support). Alternative to `file`/`url`.",
-                        "type": "text/plain"
-                      },
-                      "key": "audio",
-                      "value": "<string>"
-                    },
-                    {
-                      "disabled": false,
-                      "description": {
-                        "content": "Comma-separated list of additional metadata providers to include, e.g. `apple_music,spotify,deezer,napster,musicbrainz`.",
+                        "content": "Comma-separated metadata identifiers. Same as the standard\nendpoint — but **Spotify is NOT supported** on enterprise.\n",
                         "type": "text/plain"
                       },
                       "key": "return",
-                      "value": "apple_music,spotify"
+                      "value": "<string>",
+                      "type": "text"
                     },
                     {
-                      "disabled": false,
                       "description": {
-                        "content": "Two-letter country code for Apple Music / iTunes / Spotify results.",
+                        "content": "When 'true', return per-match start/end offsets within each 12-second chunk. (This can only be one of true,false)",
                         "type": "text/plain"
                       },
-                      "key": "market",
-                      "value": "us"
+                      "key": "accurate_offsets",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Number of 12-second chunks to skip after each scanned chunk.",
+                        "type": "text/plain"
+                      },
+                      "key": "skip",
+                      "value": "<integer>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Number of consecutive chunks to scan.",
+                        "type": "text/plain"
+                      },
+                      "key": "every",
+                      "value": "<integer>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Upper bound on the number of chunks to recognize. **Always\nset this in dev/test environments to control cost.**\n",
+                        "type": "text/plain"
+                      },
+                      "key": "limit",
+                      "value": "<integer>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "",
+                        "type": "text/plain"
+                      },
+                      "key": "skip_first_seconds",
+                      "value": "<integer>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "When 'true', use the `t`/`time_continue`/`start` URL parameter\nof the source URL as `skip_first_seconds`. Mutually exclusive\nwith `skip_first_seconds`.\n (This can only be one of true,false)",
+                        "type": "text/plain"
+                      },
+                      "key": "use_timecode",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Output format. Default json. (This can only be one of json,csv)",
+                        "type": "text/plain"
+                      },
+                      "key": "response_type",
+                      "value": "<string>",
+                      "type": "text"
                     }
                   ]
                 }
@@ -356,7 +570,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"status\": \"success\",\n  \"result\": {\n    \"artist\": \"Imagine Dragons\",\n    \"title\": \"Believer\",\n    \"album\": \"Evolve\",\n    \"release_date\": \"2017-02-01\",\n    \"label\": \"Interscope Records\",\n    \"timecode\": \"00:42\",\n    \"offset\": \"string\",\n    \"song_link\": \"https://lis.tn/Believer\",\n    \"isrc\": \"USUM71700626\",\n    \"apple_music\": {\n      \"key_0\": true,\n      \"key_1\": 1331,\n      \"key_2\": 7579.640601806872\n    },\n    \"spotify\": {\n      \"key_0\": \"string\"\n    }\n  }\n}",
+              "body": "{\n  \"externalValue\": \"https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/enterprise_with_isrc_upc.json\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -391,16 +605,16 @@
       },
       {
         "key": "in",
-        "value": "query"
+        "value": "header"
       }
     ]
   },
   "info": {
-    "_postman_id": "8ea05839-47af-437a-8a54-004358763384",
-    "name": "AudD Music Lyrics Recognition API",
+    "_postman_id": "f40d0e49-0938-4e7b-a4f5-33d0fcbe8082",
+    "name": "AudD Music Recognition API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {
-      "content": "AudD is a music recognition service. The API identifies songs from an uploaded audio file, a remote audio/video URL, or base64-encoded audio and returns rich track metadata. It also supports recognition with offset (including humming/singing) and lyrics search. All methods authenticate with an `api_token` and accept either form-encoded or multipart/form-data input.\n\nContact Support:\n Name: AudD Support\n Email: api@audd.io",
+      "content": "The AudD music recognition API identifies songs from short audio clips\n(`api.audd.io/`), large audio/video files (`enterprise.audd.io/`), and\nreal-time audio streams (callback or longpoll based on `api.audd.io/`).\n\nThis OpenAPI document is the canonical contract for the API. Every\nofficial AudD SDK validates its parser against the fixtures shipped\nalongside this spec.\n\nDocumentation: https://docs.audd.io\nGet an api_token: https://dashboard.audd.io\nSupport: api@audd.io\n\nContact Support:\n Name: AudD API Support\n Email: api@audd.io",
       "type": "text/plain"
     }
   }

@@ -2,11 +2,12 @@ aid: audd
 url: https://raw.githubusercontent.com/api-evangelist/audd/refs/heads/main/apis.yml
 name: AudD
 kind: company
-description: AudD is a music recognition service that identifies songs from audio
-  files, URLs, or microphone input via a simple REST API. The api.audd.io API returns
-  rich track metadata (artist, title, album, ISRC, links to Apple Music, Spotify,
-  Deezer and more), supports recognition by humming/singing, lyrics search, and an
-  enterprise endpoint for scanning long audio and video files.
+description: AudD is a music recognition service. Its REST API identifies songs from
+  short audio clips, uploaded files or URLs on api.audd.io, scans audio and video files
+  of any length on the enterprise endpoint (enterprise.audd.io), monitors live audio
+  streams with results delivered by callback or longpoll, and adds an account's own
+  tracks to a custom catalog (special access). Matches return track metadata (artist,
+  title, album, ISRC) with optional Apple Music, Spotify, Deezer and MusicBrainz data.
 deliveryModel:
   model: saas
   open_source: false
@@ -42,34 +43,13 @@ tags:
 - Music Recognition
 - Audio
 - Fingerprinting
-- Lyrics
 created: '2026-06-21'
-modified: '2026-06-21'
+modified: '2026-10-08'
 specificationVersion: '0.23'
 apis:
-- aid: audd:audd-lyrics-api
-  name: AudD Lyrics API
-  description: The Lyrics API from AudD — 1 operation(s) for lyrics.
-  humanURL: https://docs.audd.io/
-  baseURL: https://api.audd.io
-  tags:
-  - Lyrics
-  properties:
-  - type: OpenAPI
-    url: openapi/audd-lyrics-api-openapi.yml
-  - type: Documentation
-    url: https://docs.audd.io/
-  - type: APIReference
-    url: https://docs.audd.io/#recognize
-  - type: PostmanCollection
-    url: collections/audd.postman_collection.json
-  - type: OpenCollection
-    url: collections/audd.opencollection.json
-  - type: Documentation
-    url: https://docs.audd.io/enterprise/
 - aid: audd:audd-recognition-api
   name: AudD Recognition API
-  description: The Recognition API from AudD — 2 operation(s) for recognition.
+  description: Music recognition from a short clip, file or URL (api.audd.io), and the enterprise endpoint for audio and video files of any length (enterprise.audd.io).
   humanURL: https://docs.audd.io/
   baseURL: https://api.audd.io
   tags:
@@ -81,12 +61,44 @@ apis:
     url: https://docs.audd.io/
   - type: APIReference
     url: https://docs.audd.io/#recognize
-  - type: PostmanCollection
-    url: collections/audd.postman_collection.json
-  - type: OpenCollection
-    url: collections/audd.opencollection.json
   - type: Documentation
     url: https://docs.audd.io/enterprise/
+  - type: PostmanCollection
+    url: collections/audd-recognition-api.postman_collection.json
+  - type: OpenCollection
+    url: collections/audd-recognition-api.opencollection.json
+- aid: audd:audd-custom-catalog-api
+  name: AudD Custom Catalog API
+  description: Add your own tracks to a custom recognition catalog (special access).
+  humanURL: https://docs.audd.io/
+  baseURL: https://api.audd.io
+  tags:
+  - Custom catalog
+  properties:
+  - type: OpenAPI
+    url: openapi/audd-custom-catalog-api-openapi.yml
+  - type: Documentation
+    url: https://docs.audd.io/upload_audio_endpoint/
+  - type: PostmanCollection
+    url: collections/audd-custom-catalog-api.postman_collection.json
+  - type: OpenCollection
+    url: collections/audd-custom-catalog-api.opencollection.json
+- aid: audd:audd-streams-api
+  name: AudD Streams API
+  description: Live audio stream monitoring - add and manage streams, with recognition results delivered by callback URL or longpoll.
+  humanURL: https://docs.audd.io/
+  baseURL: https://api.audd.io
+  tags:
+  - Streams
+  properties:
+  - type: OpenAPI
+    url: openapi/audd-streams-api-openapi.yml
+  - type: Documentation
+    url: https://docs.audd.io/streams/
+  - type: PostmanCollection
+    url: collections/audd-streams-api.postman_collection.json
+  - type: OpenCollection
+    url: collections/audd-streams-api.opencollection.json
 common:
 - type: AgenticAccess
   url: agentic-access/audd-agentic-access.yml
@@ -102,6 +114,10 @@ common:
   url: https://audd.io/
 - type: Documentation
   url: https://docs.audd.io/
+- type: WellKnown
+  url: well-known/audd-well-known.yml
+- type: APICatalog
+  url: https://audd.io/.well-known/api-catalog
 - type: Plans
   url: plans/audd-plans-pricing.yml
 - type: RateLimits
@@ -111,3 +127,22 @@ common:
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
+x-correction-request:
+  requested: '2026-10-07'
+  source:
+  - _messages/2026-10/2026-10-07-fastmail-38767-corrections-for-the-audd-profile-githubcomapi-evan.md
+  request: 'AudD API Team (api@audd.io), 2026-10-07: (1) the OpenAPI in the repo is not theirs -- use https://audd.io/openapi.json
+    (OpenAPI 3.1, also in https://audd.io/.well-known/api-catalog); (2) humming/singing recognition is legacy and unsupported -- exclude
+    it; (3) lyrics search is not a supported feature -- remove the Lyrics API and lyrics tags; (4) results no longer include Napster;
+    (5) errors, including rate-limit errors, are HTTP 200 with "status": "error" and an error code, never 429; (6) the enterprise
+    endpoint and the streams API are documented and in the spec; (7) recognition requests modify nothing and should not be labelled write.'
+  applied: '2026-10-08'
+  applied_note: 'Verified live 2026-10-08: https://audd.io/openapi.json 200 (OpenAPI 3.1.0, info.version 1.4.4, 11 operations: recognize
+    GET/POST, recognizeEnterprise on enterprise.audd.io, 7 streams operations, customCatalogAdd); api-catalog 200 application/linkset+json
+    naming it as service-desc; docs.audd.io/streams/ and /upload_audio_endpoint/ 200; ErrorResponse is status const "error" + error_code.
+    Removed the pipeline-written 3.0.1 _original (it invented recognizeWithOffset, findLyrics and humming) and its Lyrics/Recognition
+    splits; archived the provider''s spec verbatim and re-split into Recognition, Streams and Custom Catalog APIs; regenerated the Postman
+    and Open Collection files from the new splits and removed the lyrics and combined ones. Lyrics tag and humming/lyrics plan, finops
+    and review text removed; Napster dropped from the description and README (note: the provider''s own spec still defines a NapsterMetadata
+    schema, "may be absent"). Rate limits now record HTTP 200 + status error, no 429. Agentic access re-derived from the new spec and
+    recognize/recognizeEnterprise curated to read (method: searched). api-catalog harvested into well-known/ and pointed to.'

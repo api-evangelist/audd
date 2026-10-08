@@ -1,0 +1,139 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://api.audd.io/",
+      "service-desc": [
+        {
+          "href": "https://audd.io/openapi.json",
+          "type": "application/json",
+          "title": "OpenAPI 3.1 description of api.audd.io and enterprise.audd.io"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://docs.audd.io/",
+          "type": "text/html",
+          "title": "API reference: standard recognition endpoint"
+        },
+        {
+          "href": "https://docs.audd.io/.md",
+          "type": "text/markdown",
+          "title": "API reference: standard recognition endpoint"
+        },
+        {
+          "href": "https://docs.audd.io/streams/",
+          "type": "text/html",
+          "title": "Live stream monitoring: addStream, callbacks, longpoll"
+        },
+        {
+          "href": "https://docs.audd.io/streams.md",
+          "type": "text/markdown",
+          "title": "Live stream monitoring: addStream, callbacks, longpoll"
+        },
+        {
+          "href": "https://docs.audd.io/upload_audio_endpoint/",
+          "type": "text/html",
+          "title": "Custom catalog: upload your own tracks (special access)"
+        },
+        {
+          "href": "https://docs.audd.io/upload_audio_endpoint.md",
+          "type": "text/markdown",
+          "title": "Custom catalog: upload your own tracks (special access)"
+        }
+      ],
+      "terms-of-service": [
+        {
+          "href": "https://audd.io/terms/",
+          "type": "text/html",
+          "title": "Terms of Service"
+        }
+      ],
+      "privacy-policy": [
+        {
+          "href": "https://audd.io/privacy/",
+          "type": "text/html",
+          "title": "Privacy policy"
+        }
+      ]
+    },
+    {
+      "anchor": "https://enterprise.audd.io/",
+      "service-desc": [
+        {
+          "href": "https://audd.io/openapi.json",
+          "type": "application/json",
+          "title": "OpenAPI 3.1 description of api.audd.io and enterprise.audd.io"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://docs.audd.io/enterprise/",
+          "type": "text/html",
+          "title": "Enterprise endpoint: audio and video files of any length"
+        },
+        {
+          "href": "https://docs.audd.io/enterprise.md",
+          "type": "text/markdown",
+          "title": "Enterprise endpoint: audio and video files of any length"
+        }
+      ],
+      "terms-of-service": [
+        {
+          "href": "https://audd.io/terms/",
+          "type": "text/html",
+          "title": "Terms of Service"
+        }
+      ],
+      "privacy-policy": [
+        {
+          "href": "https://audd.io/privacy/",
+          "type": "text/html",
+          "title": "Privacy policy"
+        }
+      ]
+    },
+    {
+      "anchor": "https://mcp.audd.io",
+      "service-desc": [
+        {
+          "href": "https://audd.io/.well-known/mcp/server-card.json",
+          "type": "application/json",
+          "title": "MCP Server Card (SEP-1649)"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://docs.audd.io/mcp/",
+          "type": "text/html",
+          "title": "MCP server setup: clients, scopes, revocation"
+        },
+        {
+          "href": "https://docs.audd.io/mcp.md",
+          "type": "text/markdown",
+          "title": "MCP server setup: clients, scopes, revocation"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://mcp.audd.io/.well-known/oauth-protected-resource",
+          "type": "application/json",
+          "title": "OAuth 2.0 protected resource metadata (RFC 9728)"
+        }
+      ],
+      "terms-of-service": [
+        {
+          "href": "https://audd.io/terms/",
+          "type": "text/html",
+          "title": "Terms of Service"
+        }
+      ],
+      "privacy-policy": [
+        {
+          "href": "https://audd.io/privacy/",
+          "type": "text/html",
+          "title": "Privacy policy"
+        }
+      ]
+    }
+  ]
+}

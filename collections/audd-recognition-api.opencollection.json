@@ -1,15 +1,15 @@
 {
   "opencollection": "1.0.0",
   "info": {
-    "name": "AudD Music Lyrics Recognition API",
-    "version": "1.0"
+    "name": "AudD Music Recognition API",
+    "version": "1.4.4"
   },
   "request": {
     "auth": {
       "type": "apikey",
       "key": "api_token",
       "value": "{{api_token}}",
-      "placement": "query"
+      "placement": "header"
     }
   },
   "items": [
@@ -21,33 +21,153 @@
       "items": [
         {
           "info": {
-            "name": "Recognize music from a file, URL, or base64 audio",
+            "name": "Same as POST recognize, but with parameters in the query string",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.audd.io/",
+            "params": [
+              {
+                "name": "api_token",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "url",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "return",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "market",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "GET form of `/`. Useful for quick tests in a browser; POST is preferred."
+        },
+        {
+          "info": {
+            "name": "Identify a song from an audio clip (the first 12 seconds are analyzed; ≤10 MB)",
             "type": "http"
           },
           "http": {
             "method": "POST",
             "url": "https://api.audd.io/",
             "body": {
-              "type": "form-urlencoded",
-              "data": []
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "url",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "audio",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "return",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "market",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
             }
           },
-          "docs": "Identifies a song from a short audio sample. Provide the audio as a multipart file upload, a remote `url`, or a base64-encoded `audio` string. Returns matched track metadata and, optionally, links to streaming services."
+          "docs": "Standard music recognition. Send a file directly (multipart) or pass\na URL the AudD server downloads.\n\nOnly the first 12 seconds of the audio are analyzed. To recognize music\nbeyond the first 12 seconds of a file, use the enterprise endpoint\n(`POST https://enterprise.audd.io/`), which scans the whole file."
         },
         {
           "info": {
-            "name": "Recognize music and return the offset of the match",
+            "name": "Recognize music in large audio/video files (hours- or days-long)",
             "type": "http"
           },
           "http": {
             "method": "POST",
-            "url": "https://api.audd.io/recognizeWithOffset/",
+            "url": "https://api.audd.io/enterprise/",
             "body": {
-              "type": "form-urlencoded",
-              "data": []
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "api_token",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "url",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "return",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "accurate_offsets",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "skip",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "every",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "limit",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "skip_first_seconds",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "use_timecode",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "response_type",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
             }
           },
-          "docs": "Recognition variant that returns the offset (position) of the matched fragment within the submitted audio. This is also the method used for recognition by humming or singing a melody."
+          "docs": "Enterprise endpoint. Send an HTTPS URL or a multipart file (streamed,\nno in-memory buffering needed). The endpoint chunks the audio into\n12-second segments and counts each scanned chunk as 1 request.\n\nSDKs default to a 1-hour read timeout for this endpoint and enable TCP\nkeepalive on the transport."
         }
       ]
     }

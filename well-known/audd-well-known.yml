@@ -1,6 +1,17 @@
 generated: '2026-09-19'
 method: probed
 hosts:
+- host: https://audd.io
+  documents:
+  - path: /.well-known/api-catalog
+    status: 200
+    type: application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"
+    file: audd-api-catalog.json
+    bytes: 3986
+    fetched: '2026-10-08'
+    note: 'RFC 9727 linkset, anchor https://api.audd.io/; service-desc https://audd.io/openapi.json (OpenAPI 3.1 for api.audd.io
+      and enterprise.audd.io); service-doc for the standard endpoint, streams and custom catalog. Added 2026-10-08 on AudD''s
+      correction request; an invented path on audd.io returns a real 404.'
 - host: https://mcp.audd.io
   documents:
   - path: /.well-known/oauth-protected-resource

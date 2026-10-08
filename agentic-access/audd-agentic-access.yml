@@ -1,36 +1,70 @@
-generated: '2026-07-15'
-method: generated
-source: openapi/audd-openapi.yml
-description: Recommended x-agentic-access execution contracts, classified heuristically from
-  the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
-  audience per deployment. See research/curity/agentic-governance/.
+generated: '2026-10-08'
+method: searched
+source: openapi/audd-custom-catalog-api-openapi.yml, openapi/audd-recognition-api-openapi.yml, openapi/audd-streams-api-openapi.yml
+description: Recommended x-agentic-access execution contracts, classified heuristically from the OpenAPI. A governance starting
+  point for exposing this API to AI agents — review and bind audience per deployment. See research/curity/agentic-governance/.
+note: 'Curated 2026-10-08 on AudD''s correction (api@audd.io, 2026-10-07): "Recognition requests don''t modify anything on
+  our side, so they shouldn''t be labelled as write actions." recognize (POST /) and recognizeEnterprise (POST enterprise.audd.io/)
+  are classified read, like recognizeGet; the stream and custom-catalog operations, which change account state, stay write.'
 summary:
-  operations: 3
+  operations: 11
   by_action_class:
-    acting: 3
+    acting: 5
+    connected: 6
   by_consequence:
-    write: 3
+    write: 5
+    read: 6
   human_in_the_loop_required: 0
 operations:
+- path: /upload/
+  method: post
+  operationId: customCatalogAdd
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
 - path: /
   method: post
   operationId: recognize
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
+    action-class: connected
+    consequence: read
+    subject: optional
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /recognizeWithOffset/
+      max-ttl: 3600
+    audit: none
+- path: /
+  method: get
+  operationId: recognizeGet
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /enterprise/
   method: post
-  operationId: recognizeWithOffset
+  operationId: recognizeEnterprise
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /setCallbackUrl/
+  method: post
+  operationId: setCallbackUrl
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -44,9 +78,19 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /findLyrics/
+- path: /getCallbackUrl/
   method: post
-  operationId: findLyrics
+  operationId: getCallbackUrl
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /addStream/
+  method: post
+  operationId: addStream
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -60,3 +104,55 @@ operations:
       - abnormal
       - high-value
     audit: required
+- path: /getStreams/
+  method: post
+  operationId: getStreams
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /setStreamUrl/
+  method: post
+  operationId: setStreamUrl
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /deleteStream/
+  method: post
+  operationId: deleteStream
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /longpoll/
+  method: get
+  operationId: longpoll
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none

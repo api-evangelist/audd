@@ -4,99 +4,36 @@ note: Who wrote each artifact in this repository. `unknown` means we have no rec
   by check-provenance-manifest.py.
 artifacts:
   agentic-access/audd-agentic-access.yml:
-    method: generated
+    method: searched
     evidence: declared in the artifact
   authentication/audd-authentication.yml:
     method: derived
     evidence: declared in the artifact
-  collections/audd-lyrics-api.opencollection.json:
+  collections/audd-custom-catalog-api.opencollection.json:
     method: derived
-    evidence: openapi/audd-lyrics-api
-  collections/audd-lyrics-api.postman_collection.json:
+    evidence: openapi/audd-custom-catalog-api
+  collections/audd-custom-catalog-api.postman_collection.json:
     method: derived
-    evidence: openapi/audd-lyrics-api
+    evidence: openapi/audd-custom-catalog-api
   collections/audd-recognition-api.opencollection.json:
     method: derived
     evidence: openapi/audd-recognition-api
   collections/audd-recognition-api.postman_collection.json:
     method: derived
     evidence: openapi/audd-recognition-api
-  collections/audd.opencollection.json:
+  collections/audd-streams-api.opencollection.json:
     method: derived
-    evidence: openapi/audd
-  collections/audd.postman_collection.json:
+    evidence: openapi/audd-streams-api
+  collections/audd-streams-api.postman_collection.json:
     method: derived
-    evidence: openapi/audd
+    evidence: openapi/audd-streams-api
   finops/audd-finops.yml:
     method: unknown
     evidence: no authorship recorded
   front-door-ai/2026-09-17.yml:
     method: unknown
     evidence: no authorship recorded
-  kin/checks-2026-09-24T161608.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-25T125852.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-25T133943.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-25T143147.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-25T154045.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-26T215308.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T094438.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T103455.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T123021.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T132314.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T140727.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-28T221322.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-29T213958.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-29T230545.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-30T203505.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-30T220315.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-31T223420.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-01T063623.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-01T210448.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-01T222808.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-02T211804.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-02T224043.yml:
+  kin/checks-2026-10-03T024842.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-09-03T161828.yml:
@@ -237,17 +174,31 @@ artifacts:
   kin/score-2026-09-24T161608.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-25T210408.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-25T232841.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-03T000835.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-03T024842.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
   mcp/audd-mcp.yml:
     method: unknown
     evidence: no authorship recorded
-  openapi/_original/audd-openapi.yml:
+  openapi/_original/audd-openapi.json:
     method: harvested
-    evidence: found in openapi/_original/; the fetch URL and bytes were not recorded, so byte-identity
-      to the provider's source is unverified
-  openapi/audd-lyrics-api-openapi.yml:
+    evidence: byte-identical to https://audd.io/openapi.json (sha256 5105a4302a0e, fetched 2026-10-08)
+  openapi/audd-custom-catalog-api-openapi.yml:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/audd-recognition-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/audd-streams-api-openapi.yml:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   plans/audd-plans-pricing.yml:
@@ -257,6 +208,9 @@ artifacts:
     method: unknown
     evidence: no authorship recorded
   security/audd-domain-security.yml:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/audd-api-catalog.json:
     method: unknown
     evidence: no authorship recorded
   well-known/audd-dashboard-api-oauth-authorization-server.json:
