@@ -2,16 +2,16 @@
 kin_checks:
   slug: audd
   schema_version: 0.23.0
-  scored_at: '2026-10-03'
-  run_ts: 2026-10-03T024842
+  scored_at: '2026-10-11'
+  run_ts: 2026-10-11T110117
   note: Actionable checks (missed + partial) in `checks`, plus the ids that did not
     apply in `na`. Everything else in rubric/scoring-0.23.0.yml was earned; counts
     below let you verify that.
   counts:
     total: 153
-    earned: 19
-    partial: 24
-    missed: 83
+    earned: 21
+    partial: 26
+    missed: 79
     na: 27
   checks:
   - id: newsroom_present
@@ -26,21 +26,11 @@ kin_checks:
     status: missed
   - id: apis_json_self_hosted
     status: missed
-  - id: openapi_3_2
-    status: missed
-    detail: 0 of 2 openapi documents pass; credited at 90% because of their provenance
-      (unknown)
-  - id: openapi_3_1
+  - id: openapi_3_0
     status: missed
     detail: 0 of 2 openapi documents pass; credited at 90% because of their provenance
       (unknown)
   - id: error_responses_documented
-    status: missed
-    detail: 0 of 2 openapi documents pass; credited at 90% because of their provenance
-      (unknown)
-  - id: examples_present
-    status: missed
-  - id: components_reuse
     status: missed
     detail: 0 of 2 openapi documents pass; credited at 90% because of their provenance
       (unknown)
@@ -105,6 +95,8 @@ kin_checks:
   - id: cli_present
     status: missed
   - id: console_or_sandbox
+    status: missed
+  - id: postman_present
     status: missed
   - id: agent_skill_present
     status: missed
@@ -176,13 +168,9 @@ kin_checks:
     status: missed
   - id: error_semantics
     status: missed
-  - id: openapi_examples
-    status: missed
   - id: event_surface_described
     status: missed
   - id: agent_skills
-    status: missed
-  - id: well_known_catalog
     status: missed
   - id: consent_identity
     status: missed
@@ -195,10 +183,15 @@ kin_checks:
   - id: contract_present
     status: partial
     earned: 18.0
-  - id: openapi_3_0
+  - id: openapi_3_2
     status: partial
-    earned: 2.7
-    detail: 2 of 2 openapi documents pass; credited at 90% because of their provenance
+    earned: 2.25
+    detail: 1 of 2 openapi documents pass; credited at 90% because of their provenance
+      (unknown)
+  - id: openapi_3_1
+    status: partial
+    earned: 2.25
+    detail: 1 of 2 openapi documents pass; credited at 90% because of their provenance
       (unknown)
   - id: info_complete
     status: partial
@@ -238,6 +231,14 @@ kin_checks:
     earned: 4.5
     detail: 2 of 2 openapi documents pass; credited at 90% because of their provenance
       (unknown)
+  - id: examples_present
+    status: partial
+    earned: 1.8
+  - id: components_reuse
+    status: partial
+    earned: 1.35
+    detail: 1 of 2 openapi documents pass; credited at 90% because of their provenance
+      (unknown)
   - id: security_schemes_defined
     status: partial
     earned: 3.6
@@ -272,9 +273,6 @@ kin_checks:
     status: partial
     earned: 1.5
     detail: pointer liveness 0.5
-  - id: postman_present
-    status: partial
-    earned: 0.5
   - id: plans_present
     status: partial
     earned: 7.2
@@ -291,8 +289,8 @@ kin_checks:
     detail: 'grade: served'
   - id: rate_limit_signal
     status: partial
-    earned: 3.5
-    detail: 'grade: documented'
+    earned: 0.88
+    detail: 'grade: derived'
   na:
   - asyncapi_3_x
   - channels_defined
