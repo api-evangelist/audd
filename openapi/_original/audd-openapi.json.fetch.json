@@ -1,12 +1,12 @@
 {
- "url": "https://audd.io/openapi.json",
- "requested_url": "https://audd.io/openapi.json",
+ "url": "https://api.audd.io/openapi.json",
+ "final": "https://api.audd.io/openapi.json",
  "status": 200,
  "content_type": "application/json",
- "bytes": 58463,
- "sha256": "5105a4302a0ea122978bbb3997abae4c24e421e3c587946df39c28165b8524c5",
- "fetched_at": "2026-10-08",
- "fetched_by": "hand (correction request 2026-10-07)",
+ "bytes": 72716,
+ "sha256": "c331f7920c814c75e0da5a0bd60326a08b22c1fb6edfbb0d7e9a4fed5a5b1703",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
  "match": "byte-identical",
- "note": "The provider's own contract, named by AudD (api@audd.io) on 2026-10-07 and listed as service-desc in https://audd.io/.well-known/api-catalog. It replaces a pipeline-written 3.0.1 document that had been archived here and that AudD said was not theirs."
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
 }

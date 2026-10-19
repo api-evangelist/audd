@@ -1,0 +1,771 @@
+openapi: 3.2.0
+info:
+  title: AudD Music Recognition Agent payments API
+  version: 1.4.4
+  description: 'The AudD music recognition API identifies songs from short audio clips
+
+    (`api.audd.io/`), large audio/video files (`enterprise.audd.io/`), and
+
+    real-time audio streams (callback or longpoll based on `api.audd.io/`).
+
+
+    This OpenAPI document is the canonical contract for the API. Every
+
+    official AudD SDK validates its parser against the fixtures shipped
+
+    alongside this spec.
+
+
+    Documentation: https://docs.audd.io
+
+    Get an api_token: https://dashboard.audd.io
+
+    Support: api@audd.io'
+  contact:
+    name: AudD API Support
+    email: api@audd.io
+    url: https://audd.io
+  license:
+    name: MIT
+    identifier: MIT
+servers:
+- url: https://api.audd.io
+  description: Standard recognition, streams and custom catalog endpoints.
+- url: https://enterprise.audd.io
+  description: Enterprise large-file recognition endpoint.
+security:
+- api_token_form: []
+- api_token_query: []
+tags:
+- name: Agent payments
+paths:
+  /agent/identity:
+    servers:
+    - url: https://dashboard-api.audd.io
+    post:
+      operationId: agentRegister
+      summary: 'Agent sign-up: one request, no AudD account, no email'
+      description: 'Returns an agent key (agt_..., shown once) and a refresh token. The balance starts at 0. Then buy prepaid requests (MPP) and call https://api.audd.io/agent/recognize. Guide: https://audd.io/auth.md'
+      tags:
+      - Agent payments
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - anonymous
+                client_name:
+                  type: string
+                  maxLength: 40
+                agent_platform:
+                  type: string
+                  maxLength: 40
+                contact_email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: 'Registered: registration_id, refresh_token and audd.api_key (the agent key).'
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /agent/credits:
+    servers:
+    - url: https://dashboard-api.audd.io
+    post:
+      operationId: agentBuyCredits
+      summary: Buy prepaid requests in packs of 1,000 (MPP, Stripe)
+      description: 'Body {"packs": N}, N from 1 to 100; the 402 challenge charges N packs. Credits last 12 months from the last purchase. Repeating a request with the same Payment-Authorization never charges twice.'
+      tags:
+      - Agent payments
+      security:
+      - agent_key: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                packs:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 1
+      responses:
+        '200':
+          description: 'Paid: the new balance; Payment-Receipt header.'
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          description: No key or an unknown key (credential_required / invalid_token). The body links the sign-up and purchase endpoints.
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: integer
+                  detail:
+                    type: string
+                  audd:
+                    type: object
+                    additionalProperties: true
+                    description: code, charged, and the links to act on (register, buy, docs)
+        '402':
+          description: 'Payment Required (MPP): the price of the requested packs (500 usd smallest units per pack). The WWW-Authenticate: Payment challenge (method stripe, intent charge) states the exact amount; pay it and repeat the request with Payment-Authorization.'
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Payment challenge (MPP)
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: integer
+                  detail:
+                    type: string
+                  audd:
+                    type: object
+                    additionalProperties: true
+                    description: code, charged, and the links to act on (register, buy, docs)
+      x-payment-info:
+        amount: '500'
+        currency: usd
+        intent: charge
+        method: stripe
+        description: 'One pack: 1,000 prepaid music recognition requests (send {"packs": N} for N packs)'
+  /agent/recognize:
+    servers:
+    - url: https://api.audd.io
+    post:
+      operationId: agentRecognize
+      summary: Recognize music with an agent's prepaid key
+      description: 'Same parameters and response as the standard endpoint (POST / on api.audd.io), with the agent key as Authorization: Bearer instead of api_token. One credit per request when recognition gave an answer (a match or a no-match) or failed with AudD error 300 (the audio couldn''t be fingerprinted) or 19 (internal error). Free: every other error answer, including input errors (no file, a URL that could not be downloaded, unsupported or undecodable audio, a file over 15 MB), unknown errors (100), timeouts and crashes on our side. With a balance of 0 the answer is 402 with a challenge for one pack; pay it and repeat the same request. Audio file up to 15 MB, as a multipart upload or base64 in the audio parameter (a larger file gets AudD error 400, which is free). The whole request body may be up to 24 MB. Guide: https://audd.io/auth.md'
+      tags:
+      - Agent payments
+      security:
+      - agent_key: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: HTTPS URL of the audio file. One of `url`, `file`, or `audio` is required.
+                file:
+                  type: string
+                  format: binary
+                  description: Multipart file upload. One of `url`, `file`, or `audio` is required.
+                audio:
+                  type: string
+                  description: Base64-encoded audio. Discouraged; limited support.
+                return:
+                  type: string
+                  description: 'Comma-separated metadata identifiers. Valid values:
+
+                    `apple_music`, `spotify`, `deezer`, `napster`, `musicbrainz`.
+
+                    '
+                  example: apple_music,spotify
+                market:
+                  type: string
+                  description: ISO country code for Apple Music / iTunes / Spotify regional results. Default `us`.
+                  example: us
+      responses:
+        '200':
+          description: 'Recognition processed. The response is a `success` payload (with
+
+            `result` either populated or null when no match was found) or an
+
+            `error` payload.
+
+            '
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/RecognizeSuccessResponse'
+                - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                with_metadata:
+                  summary: Public-DB match with apple_music + spotify + musicbrainz return
+                  externalValue: https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_with_metadata.json
+                custom_match:
+                  summary: Custom-DB match (caller's fingerprint catalog)
+                  externalValue: https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_custom_match.json
+                error_invalid_token:
+                  summary: Error 900 — invalid api_token
+                  externalValue: https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_900_invalid_token.json
+                error_no_file:
+                  summary: Error 700 — no file or url sent
+                  externalValue: https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_700_no_file.json
+        '401':
+          description: No key or an unknown key (credential_required / invalid_token). The body links the sign-up and purchase endpoints.
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: integer
+                  detail:
+                    type: string
+                  audd:
+                    type: object
+                    additionalProperties: true
+                    description: code, charged, and the links to act on (register, buy, docs)
+        '402':
+          description: 'Payment Required (MPP): the agent has no prepaid requests left; nothing was processed or charged. The WWW-Authenticate: Payment challenge (method stripe, intent charge) states the exact amount; pay it and repeat the request with Payment-Authorization.'
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Payment challenge (MPP)
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: integer
+                  detail:
+                    type: string
+                  audd:
+                    type: object
+                    additionalProperties: true
+                    description: code, charged, and the links to act on (register, buy, docs)
+      x-payment-info:
+        amount: '500'
+        currency: usd
+        intent: charge
+        method: stripe
+        description: 'One pack: 1,000 prepaid requests, charged only when the balance is 0'
+components:
+  schemas:
+    NapsterMetadata:
+      type: object
+      additionalProperties: true
+      description: Mirror of the upstream Napster track payload. May be absent for some tracks.
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        index:
+          type: integer
+        disc:
+          type: integer
+        href:
+          type: string
+          format: uri
+        playbackSeconds:
+          type: integer
+        isExplicit:
+          type: boolean
+        isStreamable:
+          type: boolean
+        isAvailableInHiRes:
+          type: boolean
+        name:
+          type: string
+        isrc:
+          type: string
+        shortcut:
+          type: string
+        blurbs:
+          type: array
+          items:
+            type: string
+        artistId:
+          type: string
+        artistName:
+          type: string
+        albumId:
+          type: string
+        albumName:
+          type: string
+        formats:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        previewURL:
+          type: string
+          format: uri
+        contributors:
+          type: object
+          additionalProperties: true
+        links:
+          type: object
+          additionalProperties: true
+    SpotifyMetadata:
+      type: object
+      additionalProperties: true
+      description: Mirror of the upstream Spotify track payload.
+      properties:
+        album:
+          type: object
+          additionalProperties: true
+        artists:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        available_markets:
+          oneOf:
+          - type: array
+            items:
+              type: string
+          - type: 'null'
+        disc_number:
+          type: integer
+        duration_ms:
+          type: integer
+        explicit:
+          type: boolean
+        external_ids:
+          type: object
+          additionalProperties: true
+        external_urls:
+          type: object
+          additionalProperties: true
+        href:
+          type: string
+          format: uri
+        id:
+          type: string
+        is_local:
+          type: boolean
+        is_playable:
+          type: boolean
+        linked_from:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+        name:
+          type: string
+        popularity:
+          type: integer
+        track_number:
+          type: integer
+        type:
+          type: string
+        uri:
+          type: string
+    ErrorResponse:
+      type: object
+      additionalProperties: true
+      required:
+      - status
+      - error
+      properties:
+        status:
+          type: string
+          const: error
+        error:
+          type: object
+          required:
+          - error_code
+          - error_message
+          additionalProperties: true
+          properties:
+            error_code:
+              type: integer
+              description: 'AudD-specific numeric error code. The SDK maps each code to a
+
+                typed exception class (see audd-<lang>/docs/errors.md). The
+
+                full set: 19, 20, 31337, 40, 50, 51, 100, 300, 400, 500, 600,
+
+                601, 602, 610, 611, 700, 701, 702, 900, 901, 902, 903, 904,
+
+                905, 906, 907, 1000.
+
+                '
+              enum:
+              - 19
+              - 20
+              - 31337
+              - 40
+              - 50
+              - 51
+              - 100
+              - 300
+              - 400
+              - 500
+              - 600
+              - 601
+              - 602
+              - 610
+              - 611
+              - 700
+              - 701
+              - 702
+              - 900
+              - 901
+              - 902
+              - 903
+              - 904
+              - 905
+              - 906
+              - 907
+              - 1000
+            error_message:
+              type: string
+              description: Human-readable, server-provided. Already includes any subscription-nudge appendix.
+        request_params:
+          type: object
+          additionalProperties: true
+          description: 'Server''s redacted echo of the request parameters. The api_token
+
+            field is masked (e.g., "d***e"). Standard endpoint uses this field
+
+            name; the enterprise endpoint uses `requested_params` (see below).
+
+            '
+        requested_params:
+          type: object
+          additionalProperties: true
+          description: 'Same as `request_params` but with this alternate name as returned
+
+            by the enterprise endpoint. SDKs should normalize these into one
+
+            field on the SDK-side error object.
+
+            '
+        request_api_method:
+          type: string
+          description: 'Humanized echo of the API method (e.g., "Recognition", "Adding a
+
+            stream stream", "Getting the URL for callbacks"). Informational
+
+            only — not a programmatic discriminator.
+
+            '
+        request_http_method:
+          type: string
+          enum:
+          - GET
+          - POST
+        execution_time:
+          type: string
+          description: Wall-clock execution time on the server (enterprise endpoint only).
+        result:
+          type: object
+          additionalProperties: true
+          description: 'For most errors, omitted. For codes 19 and 31337, the server may
+
+            populate a "branded" result with `artist`/`title` strings — the
+
+            SDK surfaces these on the exception''s `branded_message` field
+
+            and does NOT expose them as a recognition result.
+
+            '
+          properties:
+            artist:
+              type: string
+            title:
+              type: string
+        see api documentation:
+          type: string
+          format: uri
+        contact us:
+          type: string
+          format: email
+    DeezerMetadata:
+      type: object
+      additionalProperties: true
+      description: Mirror of the upstream Deezer track payload. May be absent for some tracks.
+      properties:
+        id:
+          type: integer
+        readable:
+          type: boolean
+        title:
+          type: string
+        title_short:
+          type: string
+        title_version:
+          type: string
+        link:
+          type: string
+          format: uri
+        duration:
+          type: integer
+        rank:
+          type: integer
+        explicit_lyrics:
+          type: boolean
+        explicit_content_lyrics:
+          type: integer
+        explicit_content_cover:
+          type: integer
+        preview:
+          type: string
+          format: uri
+        md5_image:
+          type: string
+        artist:
+          type: object
+          additionalProperties: true
+        album:
+          type: object
+          additionalProperties: true
+        type:
+          type: string
+    RecognitionResult:
+      type: object
+      additionalProperties: true
+      required:
+      - timecode
+      description: "A single recognition result. Shape varies by which catalog matched:\n\n* Public-DB match — fields like `artist`, `title`, `album`,\n  `release_date`, `label`, `song_link` are populated; `audio_id` is\n  absent.\n* Custom-DB match (caller's private fingerprint catalog) — only\n  `timecode` and `audio_id` are populated; the public-DB fields are\n  absent.\n\nThe SDK exposes `is_custom_match` / `is_public_match` discriminator\nhelpers and a `thumbnail_url` helper that returns\n`{song_link}?thumb` only when the host of `song_link` is `lis.tn`.\n"
+      properties:
+        timecode:
+          type: string
+          pattern: ^\d{2}:\d{2}$
+          description: Position in the recognized song (MM:SS) at which the matched fragment plays.
+        audio_id:
+          type: integer
+          description: Custom-DB match identifier. Mutually exclusive with the public-DB fields in practice.
+        artist:
+          type: string
+        title:
+          type: string
+        album:
+          type: string
+        release_date:
+          type: string
+          description: Date in YYYY-MM-DD format.
+        label:
+          type: string
+        song_link:
+          type: string
+          format: uri
+          description: 'Canonical AudD link to the song page. For lis.tn-hosted links,
+
+            appending `?thumb` returns the cover-art image.
+
+            '
+        apple_music:
+          $ref: '#/components/schemas/AppleMusicMetadata'
+        spotify:
+          $ref: '#/components/schemas/SpotifyMetadata'
+        deezer:
+          $ref: '#/components/schemas/DeezerMetadata'
+        napster:
+          $ref: '#/components/schemas/NapsterMetadata'
+        musicbrainz:
+          type: array
+          items:
+            $ref: '#/components/schemas/MusicBrainzEntry'
+    RecognizeSuccessResponse:
+      type: object
+      additionalProperties: true
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          const: success
+        result:
+          oneOf:
+          - $ref: '#/components/schemas/RecognitionResult'
+          - type: 'null'
+    MusicBrainzEntry:
+      type: object
+      additionalProperties: true
+      description: 'Single MusicBrainz recording match. AudD returns an array of these
+
+        because MusicBrainz''s matching often surfaces multiple candidates.
+
+        '
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        score:
+          oneOf:
+          - type: integer
+          - type: string
+        title:
+          type: string
+        length:
+          type: integer
+        disambiguation:
+          type: string
+        video:
+          oneOf:
+          - type: boolean
+          - type: 'null'
+        artist-credit:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        releases:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        isrcs:
+          oneOf:
+          - type: array
+            items:
+              type: string
+          - type: 'null'
+        tags:
+          oneOf:
+          - type: array
+            items:
+              type: object
+              additionalProperties: true
+          - type: 'null'
+    AppleMusicMetadata:
+      type: object
+      additionalProperties: true
+      description: 'Mirror of the upstream Apple Music track payload. AudD passes it
+
+        through verbatim, so SDK consumers can rely on additional fields
+
+        appearing here as Apple ships them.
+
+        '
+      properties:
+        previews:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+            properties:
+              url:
+                type: string
+                format: uri
+        artwork:
+          type: object
+          additionalProperties: true
+          properties:
+            width:
+              type: integer
+            height:
+              type: integer
+            url:
+              type: string
+            bgColor:
+              type: string
+            textColor1:
+              type: string
+            textColor2:
+              type: string
+            textColor3:
+              type: string
+            textColor4:
+              type: string
+        artistName:
+          type: string
+        url:
+          type: string
+          format: uri
+        discNumber:
+          type: integer
+        genreNames:
+          type: array
+          items:
+            type: string
+        durationInMillis:
+          type: integer
+        releaseDate:
+          type: string
+        name:
+          type: string
+        isrc:
+          type: string
+        albumName:
+          type: string
+        playParams:
+          type: object
+          additionalProperties: true
+        trackNumber:
+          type: integer
+        composerName:
+          type: string
+  securitySchemes:
+    api_token_form:
+      type: apiKey
+      in: header
+      name: api_token
+      description: 'AudD authentication uses the `api_token` parameter sent either as a
+
+        multipart/form-data field (POST) or as a query parameter (GET/POST).
+
+        OpenAPI 3.1 has no first-class scheme for "auth in request body"; this
+
+        entry documents the parameter for code generators that recognize it.
+
+        '
+    api_token_query:
+      type: apiKey
+      in: query
+      name: api_token
+      description: api_token sent as a query parameter (works on every endpoint).
+    agent_key:
+      type: http
+      scheme: bearer
+      description: 'An agent key (agt_...) from the sign-up endpoint, sent only as Authorization: Bearer. How agents sign up and pay: https://audd.io/auth.md'
+x-service-info:
+  categories:
+  - music
+  - audio
+  docs:
+    homepage: https://audd.io/
+    apiReference: https://docs.audd.io/
+    llms: https://audd.io/llms.txt

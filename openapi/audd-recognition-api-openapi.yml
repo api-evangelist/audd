@@ -262,53 +262,6 @@ paths:
                 description: CSV when `response_type=csv`.
 components:
   schemas:
-    EnterpriseMatch:
-      type: object
-      additionalProperties: true
-      required:
-      - score
-      - timecode
-      description: 'A single match within a 12-second chunk of an enterprise-uploaded
-
-        file. Multiple matches per chunk indicate competing candidates;
-
-        higher `score` is more confident.
-
-        '
-      properties:
-        score:
-          type: integer
-          minimum: 0
-          maximum: 100
-        artist:
-          type: string
-        title:
-          type: string
-        album:
-          type: string
-        release_date:
-          type: string
-        label:
-          type: string
-        timecode:
-          type: string
-          pattern: ^\d{2}:\d{2}$
-          description: Position in the original song (MM:SS) where the matched fragment plays.
-        isrc:
-          type: string
-          description: Present only on enterprise-tier accounts.
-        upc:
-          type: string
-          description: Present only on enterprise-tier accounts.
-        song_link:
-          type: string
-          format: uri
-        start_offset:
-          type: integer
-          description: Position (milliseconds) within the 12-second chunk where the match begins.
-        end_offset:
-          type: integer
-          description: Position (milliseconds) within the 12-second chunk where the match ends.
     NapsterMetadata:
       type: object
       additionalProperties: true
@@ -365,106 +318,6 @@ components:
         links:
           type: object
           additionalProperties: true
-    EnterpriseChunkResult:
-      type: object
-      additionalProperties: true
-      required:
-      - songs
-      - offset
-      properties:
-        songs:
-          type: array
-          items:
-            $ref: '#/components/schemas/EnterpriseMatch'
-        offset:
-          type: string
-          pattern: ^\d{2}:\d{2}$
-          description: Position (MM:SS) in the submitted file at which this 12-second chunk begins.
-    AppleMusicMetadata:
-      type: object
-      additionalProperties: true
-      description: 'Mirror of the upstream Apple Music track payload. AudD passes it
-
-        through verbatim, so SDK consumers can rely on additional fields
-
-        appearing here as Apple ships them.
-
-        '
-      properties:
-        previews:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-            properties:
-              url:
-                type: string
-                format: uri
-        artwork:
-          type: object
-          additionalProperties: true
-          properties:
-            width:
-              type: integer
-            height:
-              type: integer
-            url:
-              type: string
-            bgColor:
-              type: string
-            textColor1:
-              type: string
-            textColor2:
-              type: string
-            textColor3:
-              type: string
-            textColor4:
-              type: string
-        artistName:
-          type: string
-        url:
-          type: string
-          format: uri
-        discNumber:
-          type: integer
-        genreNames:
-          type: array
-          items:
-            type: string
-        durationInMillis:
-          type: integer
-        releaseDate:
-          type: string
-        name:
-          type: string
-        isrc:
-          type: string
-        albumName:
-          type: string
-        playParams:
-          type: object
-          additionalProperties: true
-        trackNumber:
-          type: integer
-        composerName:
-          type: string
-    EnterpriseSuccessResponse:
-      type: object
-      additionalProperties: true
-      required:
-      - status
-      - result
-      properties:
-        status:
-          type: string
-          const: success
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/EnterpriseChunkResult'
-        execution_time:
-          type: string
-          description: Wall-clock execution time on the server.
     SpotifyMetadata:
       type: object
       additionalProperties: true
@@ -520,6 +373,21 @@ components:
           type: string
         uri:
           type: string
+    EnterpriseChunkResult:
+      type: object
+      additionalProperties: true
+      required:
+      - songs
+      - offset
+      properties:
+        songs:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnterpriseMatch'
+        offset:
+          type: string
+          pattern: ^\d{2}:\d{2}$
+          description: Position (MM:SS) in the submitted file at which this 12-second chunk begins.
     ErrorResponse:
       type: object
       additionalProperties: true
@@ -641,6 +509,47 @@ components:
         contact us:
           type: string
           format: email
+    DeezerMetadata:
+      type: object
+      additionalProperties: true
+      description: Mirror of the upstream Deezer track payload. May be absent for some tracks.
+      properties:
+        id:
+          type: integer
+        readable:
+          type: boolean
+        title:
+          type: string
+        title_short:
+          type: string
+        title_version:
+          type: string
+        link:
+          type: string
+          format: uri
+        duration:
+          type: integer
+        rank:
+          type: integer
+        explicit_lyrics:
+          type: boolean
+        explicit_content_lyrics:
+          type: integer
+        explicit_content_cover:
+          type: integer
+        preview:
+          type: string
+          format: uri
+        md5_image:
+          type: string
+        artist:
+          type: object
+          additionalProperties: true
+        album:
+          type: object
+          additionalProperties: true
+        type:
+          type: string
     RecognitionResult:
       type: object
       additionalProperties: true
@@ -750,46 +659,137 @@ components:
               type: object
               additionalProperties: true
           - type: 'null'
-    DeezerMetadata:
+    EnterpriseSuccessResponse:
       type: object
       additionalProperties: true
-      description: Mirror of the upstream Deezer track payload. May be absent for some tracks.
+      required:
+      - status
+      - result
       properties:
-        id:
+        status:
+          type: string
+          const: success
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnterpriseChunkResult'
+        execution_time:
+          type: string
+          description: Wall-clock execution time on the server.
+    EnterpriseMatch:
+      type: object
+      additionalProperties: true
+      required:
+      - score
+      - timecode
+      description: 'A single match within a 12-second chunk of an enterprise-uploaded
+
+        file. Multiple matches per chunk indicate competing candidates;
+
+        higher `score` is more confident.
+
+        '
+      properties:
+        score:
           type: integer
-        readable:
-          type: boolean
+          minimum: 0
+          maximum: 100
+        artist:
+          type: string
         title:
           type: string
-        title_short:
-          type: string
-        title_version:
-          type: string
-        link:
-          type: string
-          format: uri
-        duration:
-          type: integer
-        rank:
-          type: integer
-        explicit_lyrics:
-          type: boolean
-        explicit_content_lyrics:
-          type: integer
-        explicit_content_cover:
-          type: integer
-        preview:
-          type: string
-          format: uri
-        md5_image:
-          type: string
-        artist:
-          type: object
-          additionalProperties: true
         album:
+          type: string
+        release_date:
+          type: string
+        label:
+          type: string
+        timecode:
+          type: string
+          pattern: ^\d{2}:\d{2}$
+          description: Position in the original song (MM:SS) where the matched fragment plays.
+        isrc:
+          type: string
+          description: Present only on enterprise-tier accounts.
+        upc:
+          type: string
+          description: Present only on enterprise-tier accounts.
+        song_link:
+          type: string
+          format: uri
+        start_offset:
+          type: integer
+          description: Position (milliseconds) within the 12-second chunk where the match begins.
+        end_offset:
+          type: integer
+          description: Position (milliseconds) within the 12-second chunk where the match ends.
+    AppleMusicMetadata:
+      type: object
+      additionalProperties: true
+      description: 'Mirror of the upstream Apple Music track payload. AudD passes it
+
+        through verbatim, so SDK consumers can rely on additional fields
+
+        appearing here as Apple ships them.
+
+        '
+      properties:
+        previews:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+            properties:
+              url:
+                type: string
+                format: uri
+        artwork:
           type: object
           additionalProperties: true
-        type:
+          properties:
+            width:
+              type: integer
+            height:
+              type: integer
+            url:
+              type: string
+            bgColor:
+              type: string
+            textColor1:
+              type: string
+            textColor2:
+              type: string
+            textColor3:
+              type: string
+            textColor4:
+              type: string
+        artistName:
+          type: string
+        url:
+          type: string
+          format: uri
+        discNumber:
+          type: integer
+        genreNames:
+          type: array
+          items:
+            type: string
+        durationInMillis:
+          type: integer
+        releaseDate:
+          type: string
+        name:
+          type: string
+        isrc:
+          type: string
+        albumName:
+          type: string
+        playParams:
+          type: object
+          additionalProperties: true
+        trackNumber:
+          type: integer
+        composerName:
           type: string
   securitySchemes:
     api_token_form:
@@ -810,3 +810,15 @@ components:
       in: query
       name: api_token
       description: api_token sent as a query parameter (works on every endpoint).
+    agent_key:
+      type: http
+      scheme: bearer
+      description: 'An agent key (agt_...) from the sign-up endpoint, sent only as Authorization: Bearer. How agents sign up and pay: https://audd.io/auth.md'
+x-service-info:
+  categories:
+  - music
+  - audio
+  docs:
+    homepage: https://audd.io/
+    apiReference: https://docs.audd.io/
+    llms: https://audd.io/llms.txt

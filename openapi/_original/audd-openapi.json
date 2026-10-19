@@ -14,6 +14,17 @@
       "identifier": "MIT"
     }
   },
+  "x-service-info": {
+    "categories": [
+      "music",
+      "audio"
+    ],
+    "docs": {
+      "homepage": "https://audd.io/",
+      "apiReference": "https://docs.audd.io/",
+      "llms": "https://audd.io/llms.txt"
+    }
+  },
   "servers": [
     {
       "url": "https://api.audd.io",
@@ -32,6 +43,1145 @@
       "api_token_query": []
     }
   ],
+  "paths": {
+    "/agent/identity": {
+      "servers": [
+        {
+          "url": "https://dashboard-api.audd.io"
+        }
+      ],
+      "post": {
+        "operationId": "agentRegister",
+        "summary": "Agent sign-up: one request, no AudD account, no email",
+        "description": "Returns an agent key (agt_..., shown once) and a refresh token. The balance starts at 0. Then buy prepaid requests (MPP) and call https://api.audd.io/agent/recognize. Guide: https://audd.io/auth.md",
+        "tags": [
+          "Agent payments"
+        ],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "anonymous"
+                    ]
+                  },
+                  "client_name": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "agent_platform": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "contact_email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registered: registration_id, refresh_token and audd.api_key (the agent key).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent/credits": {
+      "servers": [
+        {
+          "url": "https://dashboard-api.audd.io"
+        }
+      ],
+      "post": {
+        "operationId": "agentBuyCredits",
+        "summary": "Buy prepaid requests in packs of 1,000 (MPP, Stripe)",
+        "description": "Body {\"packs\": N}, N from 1 to 100; the 402 challenge charges N packs. Credits last 12 months from the last purchase. Repeating a request with the same Payment-Authorization never charges twice.",
+        "tags": [
+          "Agent payments"
+        ],
+        "security": [
+          {
+            "agent_key": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "packs": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid: the new balance; Payment-Receipt header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No key or an unknown key (credential_required / invalid_token). The body links the sign-up and purchase endpoints.",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "audd": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "code, charged, and the links to act on (register, buy, docs)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required (MPP): the price of the requested packs (500 usd smallest units per pack). The WWW-Authenticate: Payment challenge (method stripe, intent charge) states the exact amount; pay it and repeat the request with Payment-Authorization.",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Payment challenge (MPP)"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "audd": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "code, charged, and the links to act on (register, buy, docs)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-payment-info": {
+          "amount": "500",
+          "currency": "usd",
+          "intent": "charge",
+          "method": "stripe",
+          "description": "One pack: 1,000 prepaid music recognition requests (send {\"packs\": N} for N packs)"
+        }
+      }
+    },
+    "/agent/recognize": {
+      "servers": [
+        {
+          "url": "https://api.audd.io"
+        }
+      ],
+      "post": {
+        "operationId": "agentRecognize",
+        "summary": "Recognize music with an agent's prepaid key",
+        "description": "Same parameters and response as the standard endpoint (POST / on api.audd.io), with the agent key as Authorization: Bearer instead of api_token. One credit per request when recognition gave an answer (a match or a no-match) or failed with AudD error 300 (the audio couldn't be fingerprinted) or 19 (internal error). Free: every other error answer, including input errors (no file, a URL that could not be downloaded, unsupported or undecodable audio, a file over 15 MB), unknown errors (100), timeouts and crashes on our side. With a balance of 0 the answer is 402 with a challenge for one pack; pay it and repeat the same request. Audio file up to 15 MB, as a multipart upload or base64 in the audio parameter (a larger file gets AudD error 400, which is free). The whole request body may be up to 24 MB. Guide: https://audd.io/auth.md",
+        "tags": [
+          "Agent payments"
+        ],
+        "security": [
+          {
+            "agent_key": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "HTTPS URL of the audio file. One of `url`, `file`, or `audio` is required."
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Multipart file upload. One of `url`, `file`, or `audio` is required."
+                  },
+                  "audio": {
+                    "type": "string",
+                    "description": "Base64-encoded audio. Discouraged; limited support."
+                  },
+                  "return": {
+                    "type": "string",
+                    "description": "Comma-separated metadata identifiers. Valid values:\n`apple_music`, `spotify`, `deezer`, `napster`, `musicbrainz`.\n",
+                    "example": "apple_music,spotify"
+                  },
+                  "market": {
+                    "type": "string",
+                    "description": "ISO country code for Apple Music / iTunes / Spotify regional results. Default `us`.",
+                    "example": "us"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recognition processed. The response is a `success` payload (with\n`result` either populated or null when no match was found) or an\n`error` payload.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/RecognizeSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "with_metadata": {
+                    "summary": "Public-DB match with apple_music + spotify + musicbrainz return",
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_with_metadata.json"
+                  },
+                  "custom_match": {
+                    "summary": "Custom-DB match (caller's fingerprint catalog)",
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_custom_match.json"
+                  },
+                  "error_invalid_token": {
+                    "summary": "Error 900 \u2014 invalid api_token",
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_900_invalid_token.json"
+                  },
+                  "error_no_file": {
+                    "summary": "Error 700 \u2014 no file or url sent",
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_700_no_file.json"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No key or an unknown key (credential_required / invalid_token). The body links the sign-up and purchase endpoints.",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "audd": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "code, charged, and the links to act on (register, buy, docs)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required (MPP): the agent has no prepaid requests left; nothing was processed or charged. The WWW-Authenticate: Payment challenge (method stripe, intent charge) states the exact amount; pay it and repeat the request with Payment-Authorization.",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Payment challenge (MPP)"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "audd": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "code, charged, and the links to act on (register, buy, docs)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-payment-info": {
+          "amount": "500",
+          "currency": "usd",
+          "intent": "charge",
+          "method": "stripe",
+          "description": "One pack: 1,000 prepaid requests, charged only when the balance is 0"
+        }
+      }
+    },
+    "/": {
+      "post": {
+        "operationId": "recognize",
+        "summary": "Identify a song from an audio clip (the first 12 seconds are analyzed; \u226410 MB).",
+        "description": "Standard music recognition. Send a file directly (multipart) or pass\na URL the AudD server downloads.\n\nOnly the first 12 seconds of the audio are analyzed. To recognize music\nbeyond the first 12 seconds of a file, use the enterprise endpoint\n(`POST https://enterprise.audd.io/`), which scans the whole file.\n",
+        "tags": [
+          "Recognition"
+        ],
+        "servers": [
+          {
+            "url": "https://api.audd.io"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string",
+                    "description": "From https://dashboard.audd.io."
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "HTTPS URL of the audio file. One of `url`, `file`, or `audio` is required."
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Multipart file upload. One of `url`, `file`, or `audio` is required."
+                  },
+                  "audio": {
+                    "type": "string",
+                    "description": "Base64-encoded audio. Discouraged; limited support."
+                  },
+                  "return": {
+                    "type": "string",
+                    "description": "Comma-separated metadata identifiers. Valid values:\n`apple_music`, `spotify`, `deezer`, `napster`, `musicbrainz`.\n",
+                    "example": "apple_music,spotify"
+                  },
+                  "market": {
+                    "type": "string",
+                    "description": "ISO country code for Apple Music / iTunes / Spotify regional results. Default `us`.",
+                    "example": "us"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recognition processed. The response is a `success` payload (with\n`result` either populated or null when no match was found) or an\n`error` payload.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/RecognizeSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "with_metadata": {
+                    "summary": "Public-DB match with apple_music + spotify + musicbrainz return",
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_with_metadata.json"
+                  },
+                  "custom_match": {
+                    "summary": "Custom-DB match (caller's fingerprint catalog)",
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_custom_match.json"
+                  },
+                  "error_invalid_token": {
+                    "summary": "Error 900 \u2014 invalid api_token",
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_900_invalid_token.json"
+                  },
+                  "error_no_file": {
+                    "summary": "Error 700 \u2014 no file or url sent",
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_700_no_file.json"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "recognizeGet",
+        "summary": "Same as POST recognize, but with parameters in the query string.",
+        "description": "GET form of `/`. Useful for quick tests in a browser; POST is preferred.",
+        "tags": [
+          "Recognition"
+        ],
+        "servers": [
+          {
+            "url": "https://api.audd.io"
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "api_token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "url",
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          {
+            "in": "query",
+            "name": "return",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "market",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same shapes as POST.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/RecognizeSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "with_metadata": {
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_with_metadata.json"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/setCallbackUrl/": {
+      "post": {
+        "operationId": "setCallbackUrl",
+        "summary": "Configure where AudD POSTs stream-recognition callbacks.",
+        "tags": [
+          "Streams"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token",
+                  "url"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Where AudD POSTs callbacks. Set to `https://audd.tech/empty/`\nif you only want longpoll. The URL itself can carry a\n`?return=apple_music,deezer` parameter to receive that\nmetadata in callbacks.\n"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Callback URL set or rejected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/StreamMutationSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Standard mutation-success response",
+                    "value": {
+                      "status": "success",
+                      "result": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getCallbackUrl/": {
+      "post": {
+        "operationId": "getCallbackUrl",
+        "summary": "Get the configured callback URL.",
+        "tags": [
+          "Streams"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the URL or \u2014 when no callback URL has ever been\nconfigured \u2014 error code 19 with message \"Internal error\".\n**The SDK uses this signal to short-circuit longpoll setup.**\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/GetCallbackUrlSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "no_callback_configured": {
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_19_no_callback_url.json"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/addStream/": {
+      "post": {
+        "operationId": "addStream",
+        "summary": "Add a stream for live recognition.",
+        "tags": [
+          "Streams"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token",
+                  "url",
+                  "radio_id"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "Stream URL \u2014 direct (DASH/Icecast/HLS/m3u/m3u8) or shortcut\n(`twitch:<channel>`, `youtube:<video_id>`, `youtube-ch:<channel_id>`).\n"
+                  },
+                  "radio_id": {
+                    "type": "integer",
+                    "description": "Caller-supplied identifier; must be unique per account."
+                  },
+                  "callbacks": {
+                    "type": "string",
+                    "enum": [
+                      "before"
+                    ],
+                    "description": "Set to `before` to receive callbacks at song start.\nDefault is callbacks at song end (with total play length).\n"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stream added or rejected (e.g.,",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/StreamMutationSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "error_slots_exhausted": {
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_902_stream_limit.json"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getStreams/": {
+      "post": {
+        "operationId": "getStreams",
+        "summary": "List configured streams.",
+        "tags": [
+          "Streams"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the array of configured streams (may be empty).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/GetStreamsSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "empty": {
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/getStreams_empty.json"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/setStreamUrl/": {
+      "post": {
+        "operationId": "setStreamUrl",
+        "summary": "Update an existing stream's URL.",
+        "tags": [
+          "Streams"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token",
+                  "radio_id",
+                  "url"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string"
+                  },
+                  "radio_id": {
+                    "type": "integer"
+                  },
+                  "url": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stream URL updated or rejected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/StreamMutationSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Standard mutation-success response",
+                    "value": {
+                      "status": "success",
+                      "result": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deleteStream/": {
+      "post": {
+        "operationId": "deleteStream",
+        "summary": "Delete a stream.",
+        "tags": [
+          "Streams"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token",
+                  "radio_id"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string"
+                  },
+                  "radio_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stream deleted or rejected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/StreamMutationSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Standard mutation-success response",
+                    "value": {
+                      "status": "success",
+                      "result": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upload/": {
+      "post": {
+        "operationId": "customCatalogAdd",
+        "summary": "Add a song to the caller's private fingerprint catalog (NOT for music recognition).",
+        "description": "\u26a0 **This is NOT how you submit audio for music recognition.** For\nrecognition, use `POST /` (or `POST enterprise.audd.io/` to scan\nbeyond the first 12 seconds of a file). This endpoint adds a song to the caller's\nprivate fingerprint catalog so AudD can later identify it for the\ncaller's account only.\n\nRequires special access \u2014 contact api@audd.io to enable.\n\nCalling `upload` again with the same `audio_id` re-fingerprints that\nslot. There is no public list/delete endpoint; callers track\n`audio_id` \u2194 song mappings on their side.\n",
+        "tags": [
+          "Custom catalog"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token",
+                  "audio_id"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string"
+                  },
+                  "audio_id": {
+                    "type": "integer",
+                    "description": "Caller-supplied identifier returned alongside future\nrecognition results when this song is matched.\n"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "One of `url` or `file` is required."
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalog updated, or 904 if the caller's token doesn't have access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CustomCatalogUploadSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Custom catalog updated",
+                    "value": {
+                      "status": "success",
+                      "result": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/longpoll/": {
+      "get": {
+        "operationId": "longpoll",
+        "summary": "Long-poll for new recognition events on a category.",
+        "description": "Long-polls for new recognition events. The category can be derived\nlocally from the api_token + radio_id, or read from the\n`longpoll_category` field of `getStreams`.\n\n**Important DX caveat:** when no callback URL is configured for the\naccount (which the server signals via error #19 from `getCallbackUrl`),\nlongpoll silently returns timeout responses forever \u2014 events never\nfire. Every official SDK preflights `getCallbackUrl` and raises a\ndescriptive error if no callback URL is set. The check is bypassable\nvia a `skip_callback_check` flag.\n",
+        "tags": [
+          "Streams"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "9-char longpoll category \u2014 `longpoll_category` from `getStreams` or MD5(MD5(api_token)+str(radio_id))[:9]."
+          },
+          {
+            "in": "query",
+            "name": "timeout",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 90
+            },
+            "description": "Seconds to wait for events before returning the timeout response."
+          },
+          {
+            "in": "query",
+            "name": "since_time",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Server timestamp (ms) returned in the previous response \u2014 used to deduplicate events."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Either a timeout response (no events) or an event response (one\nor more new recognitions/notifications).\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LongpollResponse"
+                },
+                "examples": {
+                  "timeout": {
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/longpoll_no_events.json"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprise/": {
+      "post": {
+        "operationId": "recognizeEnterprise",
+        "summary": "Recognize music in large audio/video files (hours- or days-long).",
+        "description": "Enterprise endpoint. Send an HTTPS URL or a multipart file (streamed,\nno in-memory buffering needed). The endpoint chunks the audio into\n12-second segments and counts each scanned chunk as 1 request.\n\nSDKs default to a 1-hour read timeout for this endpoint and enable TCP\nkeepalive on the transport.\n",
+        "tags": [
+          "Recognition"
+        ],
+        "servers": [
+          {
+            "url": "https://enterprise.audd.io"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": [
+                  "api_token"
+                ],
+                "properties": {
+                  "api_token": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "return": {
+                    "type": "string",
+                    "description": "Comma-separated metadata identifiers. Same as the standard\nendpoint \u2014 but **Spotify is NOT supported** on enterprise.\n"
+                  },
+                  "accurate_offsets": {
+                    "type": "string",
+                    "enum": [
+                      "true",
+                      "false"
+                    ],
+                    "description": "When 'true', return per-match start/end offsets within each 12-second chunk."
+                  },
+                  "skip": {
+                    "type": "integer",
+                    "description": "Number of 12-second chunks to skip after each scanned chunk."
+                  },
+                  "every": {
+                    "type": "integer",
+                    "description": "Number of consecutive chunks to scan."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Upper bound on the number of chunks to recognize. **Always\nset this in dev/test environments to control cost.**\n"
+                  },
+                  "skip_first_seconds": {
+                    "type": "integer"
+                  },
+                  "use_timecode": {
+                    "type": "string",
+                    "enum": [
+                      "true",
+                      "false"
+                    ],
+                    "description": "When 'true', use the `t`/`time_continue`/`start` URL parameter\nof the source URL as `skip_first_seconds`. Mutually exclusive\nwith `skip_first_seconds`.\n"
+                  },
+                  "response_type": {
+                    "type": "string",
+                    "enum": [
+                      "json",
+                      "csv"
+                    ],
+                    "description": "Output format. Default json."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recognition processed. JSON or CSV depending on `response_type`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/EnterpriseSuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "success_with_isrc_upc": {
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/enterprise_with_isrc_upc.json"
+                  },
+                  "error_unauthorized": {
+                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_904_enterprise_unauthorized.json"
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "description": "CSV when `response_type=csv`."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "securitySchemes": {
       "api_token_form": {
@@ -45,6 +1195,11 @@
         "in": "query",
         "name": "api_token",
         "description": "api_token sent as a query parameter (works on every endpoint)."
+      },
+      "agent_key": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "An agent key (agt_...) from the sign-up endpoint, sent only as Authorization: Bearer. How agents sign up and pay: https://audd.io/auth.md"
       }
     },
     "schemas": {
@@ -1040,778 +2195,6 @@
           "contact us": {
             "type": "string",
             "format": "email"
-          }
-        }
-      }
-    }
-  },
-  "paths": {
-    "/": {
-      "post": {
-        "operationId": "recognize",
-        "summary": "Identify a song from an audio clip (the first 12 seconds are analyzed; \u226410 MB).",
-        "description": "Standard music recognition. Send a file directly (multipart) or pass\na URL the AudD server downloads.\n\nOnly the first 12 seconds of the audio are analyzed. To recognize music\nbeyond the first 12 seconds of a file, use the enterprise endpoint\n(`POST https://enterprise.audd.io/`), which scans the whole file.\n",
-        "tags": [
-          "Recognition"
-        ],
-        "servers": [
-          {
-            "url": "https://api.audd.io"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string",
-                    "description": "From https://dashboard.audd.io."
-                  },
-                  "url": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "HTTPS URL of the audio file. One of `url`, `file`, or `audio` is required."
-                  },
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Multipart file upload. One of `url`, `file`, or `audio` is required."
-                  },
-                  "audio": {
-                    "type": "string",
-                    "description": "Base64-encoded audio. Discouraged; limited support."
-                  },
-                  "return": {
-                    "type": "string",
-                    "description": "Comma-separated metadata identifiers. Valid values:\n`apple_music`, `spotify`, `deezer`, `napster`, `musicbrainz`.\n",
-                    "example": "apple_music,spotify"
-                  },
-                  "market": {
-                    "type": "string",
-                    "description": "ISO country code for Apple Music / iTunes / Spotify regional results. Default `us`.",
-                    "example": "us"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Recognition processed. The response is a `success` payload (with\n`result` either populated or null when no match was found) or an\n`error` payload.\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/RecognizeSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "with_metadata": {
-                    "summary": "Public-DB match with apple_music + spotify + musicbrainz return",
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_with_metadata.json"
-                  },
-                  "custom_match": {
-                    "summary": "Custom-DB match (caller's fingerprint catalog)",
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_custom_match.json"
-                  },
-                  "error_invalid_token": {
-                    "summary": "Error 900 \u2014 invalid api_token",
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_900_invalid_token.json"
-                  },
-                  "error_no_file": {
-                    "summary": "Error 700 \u2014 no file or url sent",
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_700_no_file.json"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "recognizeGet",
-        "summary": "Same as POST recognize, but with parameters in the query string.",
-        "description": "GET form of `/`. Useful for quick tests in a browser; POST is preferred.",
-        "tags": [
-          "Recognition"
-        ],
-        "servers": [
-          {
-            "url": "https://api.audd.io"
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "api_token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "url",
-            "schema": {
-              "type": "string",
-              "format": "uri"
-            }
-          },
-          {
-            "in": "query",
-            "name": "return",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "market",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Same shapes as POST.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/RecognizeSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "with_metadata": {
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/recognize_with_metadata.json"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/setCallbackUrl/": {
-      "post": {
-        "operationId": "setCallbackUrl",
-        "summary": "Configure where AudD POSTs stream-recognition callbacks.",
-        "tags": [
-          "Streams"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token",
-                  "url"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string"
-                  },
-                  "url": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "Where AudD POSTs callbacks. Set to `https://audd.tech/empty/`\nif you only want longpoll. The URL itself can carry a\n`?return=apple_music,deezer` parameter to receive that\nmetadata in callbacks.\n"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Callback URL set or rejected.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/StreamMutationSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "success": {
-                    "summary": "Standard mutation-success response",
-                    "value": {
-                      "status": "success",
-                      "result": null
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getCallbackUrl/": {
-      "post": {
-        "operationId": "getCallbackUrl",
-        "summary": "Get the configured callback URL.",
-        "tags": [
-          "Streams"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Returns the URL or \u2014 when no callback URL has ever been\nconfigured \u2014 error code 19 with message \"Internal error\".\n**The SDK uses this signal to short-circuit longpoll setup.**\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/GetCallbackUrlSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "no_callback_configured": {
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_19_no_callback_url.json"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/addStream/": {
-      "post": {
-        "operationId": "addStream",
-        "summary": "Add a stream for live recognition.",
-        "tags": [
-          "Streams"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token",
-                  "url",
-                  "radio_id"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string"
-                  },
-                  "url": {
-                    "type": "string",
-                    "description": "Stream URL \u2014 direct (DASH/Icecast/HLS/m3u/m3u8) or shortcut\n(`twitch:<channel>`, `youtube:<video_id>`, `youtube-ch:<channel_id>`).\n"
-                  },
-                  "radio_id": {
-                    "type": "integer",
-                    "description": "Caller-supplied identifier; must be unique per account."
-                  },
-                  "callbacks": {
-                    "type": "string",
-                    "enum": [
-                      "before"
-                    ],
-                    "description": "Set to `before` to receive callbacks at song start.\nDefault is callbacks at song end (with total play length).\n"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Stream added or rejected (e.g.,",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/StreamMutationSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "error_slots_exhausted": {
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_902_stream_limit.json"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getStreams/": {
-      "post": {
-        "operationId": "getStreams",
-        "summary": "List configured streams.",
-        "tags": [
-          "Streams"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Returns the array of configured streams (may be empty).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/GetStreamsSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "empty": {
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/getStreams_empty.json"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/setStreamUrl/": {
-      "post": {
-        "operationId": "setStreamUrl",
-        "summary": "Update an existing stream's URL.",
-        "tags": [
-          "Streams"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token",
-                  "radio_id",
-                  "url"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string"
-                  },
-                  "radio_id": {
-                    "type": "integer"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Stream URL updated or rejected.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/StreamMutationSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "success": {
-                    "summary": "Standard mutation-success response",
-                    "value": {
-                      "status": "success",
-                      "result": null
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/deleteStream/": {
-      "post": {
-        "operationId": "deleteStream",
-        "summary": "Delete a stream.",
-        "tags": [
-          "Streams"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token",
-                  "radio_id"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string"
-                  },
-                  "radio_id": {
-                    "type": "integer"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Stream deleted or rejected.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/StreamMutationSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "success": {
-                    "summary": "Standard mutation-success response",
-                    "value": {
-                      "status": "success",
-                      "result": null
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/upload/": {
-      "post": {
-        "operationId": "customCatalogAdd",
-        "summary": "Add a song to the caller's private fingerprint catalog (NOT for music recognition).",
-        "description": "\u26a0 **This is NOT how you submit audio for music recognition.** For\nrecognition, use `POST /` (or `POST enterprise.audd.io/` to scan\nbeyond the first 12 seconds of a file). This endpoint adds a song to the caller's\nprivate fingerprint catalog so AudD can later identify it for the\ncaller's account only.\n\nRequires special access \u2014 contact api@audd.io to enable.\n\nCalling `upload` again with the same `audio_id` re-fingerprints that\nslot. There is no public list/delete endpoint; callers track\n`audio_id` \u2194 song mappings on their side.\n",
-        "tags": [
-          "Custom catalog"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token",
-                  "audio_id"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string"
-                  },
-                  "audio_id": {
-                    "type": "integer",
-                    "description": "Caller-supplied identifier returned alongside future\nrecognition results when this song is matched.\n"
-                  },
-                  "url": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "One of `url` or `file` is required."
-                  },
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Catalog updated, or 904 if the caller's token doesn't have access.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/CustomCatalogUploadSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "success": {
-                    "summary": "Custom catalog updated",
-                    "value": {
-                      "status": "success",
-                      "result": null
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/longpoll/": {
-      "get": {
-        "operationId": "longpoll",
-        "summary": "Long-poll for new recognition events on a category.",
-        "description": "Long-polls for new recognition events. The category can be derived\nlocally from the api_token + radio_id, or read from the\n`longpoll_category` field of `getStreams`.\n\n**Important DX caveat:** when no callback URL is configured for the\naccount (which the server signals via error #19 from `getCallbackUrl`),\nlongpoll silently returns timeout responses forever \u2014 events never\nfire. Every official SDK preflights `getCallbackUrl` and raises a\ndescriptive error if no callback URL is set. The check is bypassable\nvia a `skip_callback_check` flag.\n",
-        "tags": [
-          "Streams"
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "category",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "9-char longpoll category \u2014 `longpoll_category` from `getStreams` or MD5(MD5(api_token)+str(radio_id))[:9]."
-          },
-          {
-            "in": "query",
-            "name": "timeout",
-            "schema": {
-              "type": "integer",
-              "default": 50,
-              "minimum": 1,
-              "maximum": 90
-            },
-            "description": "Seconds to wait for events before returning the timeout response."
-          },
-          {
-            "in": "query",
-            "name": "since_time",
-            "schema": {
-              "type": "integer"
-            },
-            "description": "Server timestamp (ms) returned in the previous response \u2014 used to deduplicate events."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Either a timeout response (no events) or an event response (one\nor more new recognitions/notifications).\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LongpollResponse"
-                },
-                "examples": {
-                  "timeout": {
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/longpoll_no_events.json"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/enterprise/": {
-      "post": {
-        "operationId": "recognizeEnterprise",
-        "summary": "Recognize music in large audio/video files (hours- or days-long).",
-        "description": "Enterprise endpoint. Send an HTTPS URL or a multipart file (streamed,\nno in-memory buffering needed). The endpoint chunks the audio into\n12-second segments and counts each scanned chunk as 1 request.\n\nSDKs default to a 1-hour read timeout for this endpoint and enable TCP\nkeepalive on the transport.\n",
-        "tags": [
-          "Recognition"
-        ],
-        "servers": [
-          {
-            "url": "https://enterprise.audd.io"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "required": [
-                  "api_token"
-                ],
-                "properties": {
-                  "api_token": {
-                    "type": "string"
-                  },
-                  "url": {
-                    "type": "string",
-                    "format": "uri"
-                  },
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "return": {
-                    "type": "string",
-                    "description": "Comma-separated metadata identifiers. Same as the standard\nendpoint \u2014 but **Spotify is NOT supported** on enterprise.\n"
-                  },
-                  "accurate_offsets": {
-                    "type": "string",
-                    "enum": [
-                      "true",
-                      "false"
-                    ],
-                    "description": "When 'true', return per-match start/end offsets within each 12-second chunk."
-                  },
-                  "skip": {
-                    "type": "integer",
-                    "description": "Number of 12-second chunks to skip after each scanned chunk."
-                  },
-                  "every": {
-                    "type": "integer",
-                    "description": "Number of consecutive chunks to scan."
-                  },
-                  "limit": {
-                    "type": "integer",
-                    "description": "Upper bound on the number of chunks to recognize. **Always\nset this in dev/test environments to control cost.**\n"
-                  },
-                  "skip_first_seconds": {
-                    "type": "integer"
-                  },
-                  "use_timecode": {
-                    "type": "string",
-                    "enum": [
-                      "true",
-                      "false"
-                    ],
-                    "description": "When 'true', use the `t`/`time_continue`/`start` URL parameter\nof the source URL as `skip_first_seconds`. Mutually exclusive\nwith `skip_first_seconds`.\n"
-                  },
-                  "response_type": {
-                    "type": "string",
-                    "enum": [
-                      "json",
-                      "csv"
-                    ],
-                    "description": "Output format. Default json."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Recognition processed. JSON or CSV depending on `response_type`.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/EnterpriseSuccessResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "success_with_isrc_upc": {
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/enterprise_with_isrc_upc.json"
-                  },
-                  "error_unauthorized": {
-                    "externalValue": "https://raw.githubusercontent.com/AudDMusic/audd-openapi/63414c0a939be98c9ec6d9c2eb5c4c7b92b60a51/fixtures/error_904_enterprise_unauthorized.json"
-                  }
-                }
-              },
-              "text/csv": {
-                "schema": {
-                  "type": "string",
-                  "description": "CSV when `response_type=csv`."
-                }
-              }
-            }
           }
         }
       }

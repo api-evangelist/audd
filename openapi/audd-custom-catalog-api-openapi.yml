@@ -259,3 +259,15 @@ components:
       in: query
       name: api_token
       description: api_token sent as a query parameter (works on every endpoint).
+    agent_key:
+      type: http
+      scheme: bearer
+      description: 'An agent key (agt_...) from the sign-up endpoint, sent only as Authorization: Bearer. How agents sign up and pay: https://audd.io/auth.md'
+x-service-info:
+  categories:
+  - music
+  - audio
+  docs:
+    homepage: https://audd.io/
+    apiReference: https://docs.audd.io/
+    llms: https://audd.io/llms.txt

@@ -1,0 +1,261 @@
+openapi: 3.2.0
+info:
+  title: AudD Music Recognition Custom catalog API
+  version: 1.4.4
+  description: 'The AudD music recognition API identifies songs from short audio clips
+
+    (`api.audd.io/`), large audio/video files (`enterprise.audd.io/`), and
+
+    real-time audio streams (callback or longpoll based on `api.audd.io/`).
+
+
+    This OpenAPI document is the canonical contract for the API. Every
+
+    official AudD SDK validates its parser against the fixtures shipped
+
+    alongside this spec.
+
+
+    Documentation: https://docs.audd.io
+
+    Get an api_token: https://dashboard.audd.io
+
+    Support: api@audd.io'
+  contact:
+    name: AudD API Support
+    email: api@audd.io
+    url: https://audd.io
+  license:
+    name: MIT
+    identifier: MIT
+servers:
+- url: https://api.audd.io
+  description: Standard recognition, streams and custom catalog endpoints.
+- url: https://enterprise.audd.io
+  description: Enterprise large-file recognition endpoint.
+security:
+- api_token_form: []
+- api_token_query: []
+tags:
+- name: Custom catalog
+paths:
+  /upload/:
+    post:
+      operationId: customCatalogAdd
+      summary: Add a song to the caller's private fingerprint catalog (NOT for music…
+      description: '⚠ **This is NOT how you submit audio for music recognition.** For
+
+        recognition, use `POST /` (or `POST enterprise.audd.io/` to scan
+
+        beyond the first 12 seconds of a file). This endpoint adds a song to the caller''s
+
+        private fingerprint catalog so AudD can later identify it for the
+
+        caller''s account only.
+
+
+        Requires special access — contact api@audd.io to enable.
+
+
+        Calling `upload` again with the same `audio_id` re-fingerprints that
+
+        slot. There is no public list/delete endpoint; callers track
+
+        `audio_id` ↔ song mappings on their side.'
+      tags:
+      - Custom catalog
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: true
+              required:
+              - api_token
+              - audio_id
+              properties:
+                api_token:
+                  type: string
+                audio_id:
+                  type: integer
+                  description: 'Caller-supplied identifier returned alongside future
+
+                    recognition results when this song is matched.
+
+                    '
+                url:
+                  type: string
+                  format: uri
+                  description: One of `url` or `file` is required.
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Catalog updated, or 904 if the caller's token doesn't have access.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/CustomCatalogUploadSuccessResponse'
+                - $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                success:
+                  summary: Custom catalog updated
+                  value:
+                    status: success
+                    result: null
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      additionalProperties: true
+      required:
+      - status
+      - error
+      properties:
+        status:
+          type: string
+          const: error
+        error:
+          type: object
+          required:
+          - error_code
+          - error_message
+          additionalProperties: true
+          properties:
+            error_code:
+              type: integer
+              description: 'AudD-specific numeric error code. The SDK maps each code to a
+
+                typed exception class (see audd-<lang>/docs/errors.md). The
+
+                full set: 19, 20, 31337, 40, 50, 51, 100, 300, 400, 500, 600,
+
+                601, 602, 610, 611, 700, 701, 702, 900, 901, 902, 903, 904,
+
+                905, 906, 907, 1000.
+
+                '
+              enum:
+              - 19
+              - 20
+              - 31337
+              - 40
+              - 50
+              - 51
+              - 100
+              - 300
+              - 400
+              - 500
+              - 600
+              - 601
+              - 602
+              - 610
+              - 611
+              - 700
+              - 701
+              - 702
+              - 900
+              - 901
+              - 902
+              - 903
+              - 904
+              - 905
+              - 906
+              - 907
+              - 1000
+            error_message:
+              type: string
+              description: Human-readable, server-provided. Already includes any subscription-nudge appendix.
+        request_params:
+          type: object
+          additionalProperties: true
+          description: 'Server''s redacted echo of the request parameters. The api_token
+
+            field is masked (e.g., "d***e"). Standard endpoint uses this field
+
+            name; the enterprise endpoint uses `requested_params` (see below).
+
+            '
+        requested_params:
+          type: object
+          additionalProperties: true
+          description: 'Same as `request_params` but with this alternate name as returned
+
+            by the enterprise endpoint. SDKs should normalize these into one
+
+            field on the SDK-side error object.
+
+            '
+        request_api_method:
+          type: string
+          description: 'Humanized echo of the API method (e.g., "Recognition", "Adding a
+
+            stream stream", "Getting the URL for callbacks"). Informational
+
+            only — not a programmatic discriminator.
+
+            '
+        request_http_method:
+          type: string
+          enum:
+          - GET
+          - POST
+        execution_time:
+          type: string
+          description: Wall-clock execution time on the server (enterprise endpoint only).
+        result:
+          type: object
+          additionalProperties: true
+          description: 'For most errors, omitted. For codes 19 and 31337, the server may
+
+            populate a "branded" result with `artist`/`title` strings — the
+
+            SDK surfaces these on the exception''s `branded_message` field
+
+            and does NOT expose them as a recognition result.
+
+            '
+          properties:
+            artist:
+              type: string
+            title:
+              type: string
+        see api documentation:
+          type: string
+          format: uri
+        contact us:
+          type: string
+          format: email
+    CustomCatalogUploadSuccessResponse:
+      type: object
+      additionalProperties: true
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          const: success
+        result:
+          type: 'null'
+  securitySchemes:
+    api_token_form:
+      type: apiKey
+      in: header
+      name: api_token
+      description: 'AudD authentication uses the `api_token` parameter sent either as a
+
+        multipart/form-data field (POST) or as a query parameter (GET/POST).
+
+        OpenAPI 3.1 has no first-class scheme for "auth in request body"; this
+
+        entry documents the parameter for code generators that recognize it.
+
+        '
+    api_token_query:
+      type: apiKey
+      in: query
+      name: api_token
+      description: api_token sent as a query parameter (works on every endpoint).
