@@ -61,6 +61,25 @@ edges:
     detected: '2026-10-21'
   detected_by: sweep-browser-extension-stores.py
   first_seen: '2026-10-21'
+- partner_name: Discord (discord-app-directory)
+  partner: discord
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: discord-app-directory
+  evidence: https://discord.com/discovery/applications/704782697754525711
+  mirror_of: discord/integrations/discord-integration-edges.yml
+  apps:
+  - AudD
+  listing_count: 1
+  detected: '2026-10-23'
+  detected_by: mirror-platform-listings.py
+  category: Utilities
+  publisher_verified:
+  - discord-verified-app
 generated: '2026-10-19'
 method: searched
 checked:
@@ -68,6 +87,7 @@ checked:
 - https://addons.mozilla.org/api/v5/addons/addon/<slug>/
 - https://addons.mozilla.org/api/v5/addons/search/?type=extension&app=firefox
 - https://chromewebstore.google.com/sitemap
+- discord/integrations/discord-integration-edges.yml
 source:
 - https://addons.mozilla.org/api/v5/addons/search/?type=extension&app=firefox
 - https://addons.mozilla.org/api/v5/addons/addon/<slug>/

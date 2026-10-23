@@ -50,3 +50,16 @@
     detected: '2026-10-21'
   status: not-a-workflow
   arazzo: null
+- slug: audd-discord-discord-app-directory
+  label: Discord (discord-app-directory)
+  partner: discord
+  partner_name: Discord (discord-app-directory)
+  category: Utilities
+  type: marketplace
+  marketplace: discord-app-directory
+  channel: partner-built
+  evidence: https://discord.com/discovery/applications/704782697754525711
+  source: edge
+  relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
