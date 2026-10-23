@@ -947,3 +947,9 @@ x-service-info:
     homepage: https://audd.io/
     apiReference: https://docs.audd.io/
     llms: https://audd.io/llms.txt
+x-provenance:
+  method: harvested
+  publisher: AudD
+  source: https://api.audd.io/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
