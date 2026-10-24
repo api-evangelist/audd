@@ -109,6 +109,8 @@ apis:
   humanURL: https://docs.audd.io/
   baseURL: https://api.audd.io
   tags:
+  - Agentic Payments
+  tags_raw:
   - Agent payments
   properties:
   - type: OpenAPI
