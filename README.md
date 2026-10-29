@@ -1,4 +1,4 @@
-# AudD (audd)
+# AudD
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,94 +66,126 @@
 
 AudD is a music recognition service. Its REST API identifies songs from short audio clips, uploaded files or URLs on api.audd.io, scans audio and video files of any length on the enterprise endpoint (enterprise.audd.io), monitors live audio streams with results delivered by callback or longpoll, and adds an account's own tracks to a custom catalog (special access). Matches return track metadata (artist, title, album, ISRC) with optional Apple Music, Spotify, Deezer and MusicBrainz data.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/audd/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/audd/refs/heads/main/apis.yml)
+**Areas:** Music · Music Recognition · Audio · Fingerprinting
 
-## Tags
+## AudD on APIs.io
 
-- Music
-- Music Recognition
-- Audio
-- Fingerprinting
+Everything profiled for AudD is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/audd/](https://apis.io/providers/audd/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
+### APIs (3)
 
-- **Created:** 2026-06-21
-- **Modified:** 2026-10-08
+- [AudD Recognition API](https://apis.io/apis/audd/audd-recognition-api/) — Music recognition from a short clip, file or URL (api.audd.io), and the enterprise endpoint for audio and video files of any length (enterprise.audd.io).
+- [AudD Custom Catalog API](https://apis.io/apis/audd/audd-custom-catalog-api/) — Add your own tracks to a custom recognition catalog (special access).
+- [AudD Streams API](https://apis.io/apis/audd/audd-streams-api/) — Live audio stream monitoring - add and manage streams, with recognition results delivered by callback URL or longpoll.
 
-## APIs
+### Published properties
 
-### AudD Recognition API
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-Music recognition from a short clip, file or URL (api.audd.io), and the enterprise endpoint for audio and video files of any length (enterprise.audd.io).
+#### MCP servers (1)
 
-- **Human URL:** [https://docs.audd.io/](https://docs.audd.io/)
-- **Base URL:** `https://api.audd.io`
+Model Context Protocol servers that expose the API to agents.
 
-#### Tags
+- [audd](https://apis.io/servers/audd/audd/)
 
-- Recognition
+#### Agentic access (1)
 
-#### Properties
+Which operations an agent can call, which act, and which need a human in the loop.
 
-- [OpenAPI](openapi/audd-recognition-api-openapi.yml)
-- [Documentation](https://docs.audd.io/)
-- [API Reference](https://docs.audd.io/#recognize)
-- [Documentation](https://docs.audd.io/enterprise/)
-- [Postman Collection](collections/audd-recognition-api.postman_collection.json)
-- [Open Collection](collections/audd-recognition-api.opencollection.json)
+- [Audd Agentic Access](https://apis.io/agentic-access/audd/audd-agentic-access/)
 
-### AudD Custom Catalog API
+#### Collections (3)
 
-Add your own tracks to a custom recognition catalog (special access).
+Postman and Open Collection request collections.
 
-- **Human URL:** [https://docs.audd.io/](https://docs.audd.io/)
-- **Base URL:** `https://api.audd.io`
+- [AudD Music Recognition Custom catalog API](https://apis.io/collections/audd/open-audd-custom-catalog-api/)
+- [AudD Music Recognition API](https://apis.io/collections/audd/open-audd-recognition-api/)
+- [AudD Music Recognition Streams API](https://apis.io/collections/audd/open-audd-streams-api/)
 
-#### Tags
+#### Security (2)
 
-- Custom catalog
+Authentication, trust centre, and vulnerability disclosure.
 
-#### Properties
+- [Audd Authentication](https://apis.io/security/audd/audd-authentication/)
+- [Audd Domain Security](https://apis.io/security/audd/audd-domain-security/)
 
-- [OpenAPI](openapi/audd-custom-catalog-api-openapi.yml)
-- [Documentation](https://docs.audd.io/upload_audio_endpoint/)
-- [Postman Collection](collections/audd-custom-catalog-api.postman_collection.json)
-- [Open Collection](collections/audd-custom-catalog-api.opencollection.json)
+#### Plans and pricing (1)
 
-### AudD Streams API
+Published plans, tiers and prices.
 
-Live audio stream monitoring - add and manage streams, with recognition results delivered by callback URL or longpoll.
+- [Audd Plans Pricing](https://apis.io/plans/audd/audd-plans-pricing/)
 
-- **Human URL:** [https://docs.audd.io/](https://docs.audd.io/)
-- **Base URL:** `https://api.audd.io`
+#### Rate limits (1)
 
-#### Tags
+Published request limits.
 
-- Streams
+- [Audd Rate Limits](https://apis.io/rate-limits/audd/audd-rate-limits/)
 
-#### Properties
+#### FinOps (1)
 
-- [OpenAPI](openapi/audd-streams-api-openapi.yml)
-- [Documentation](https://docs.audd.io/streams/)
-- [Postman Collection](collections/audd-streams-api.postman_collection.json)
-- [Open Collection](collections/audd-streams-api.opencollection.json)
+What the API costs to run, by operation.
 
-## Common Properties
+- [Audd Finops](https://apis.io/finops/audd/audd-finops/)
 
-- [Agentic Access](agentic-access/audd-agentic-access.yml)
-- [Domain Security](security/audd-domain-security.yml)
-- [Authentication](authentication/audd-authentication.yml)
-- [Git Hub Organization](https://github.com/AudDMusic)
-- [Linked In](https://www.linkedin.com/company/audd-io)
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
 - [Website](https://audd.io/)
 - [Documentation](https://docs.audd.io/)
-- [Well Known](well-known/audd-well-known.yml)
-- [APICatalog](https://audd.io/.well-known/api-catalog)
-- [Plans](plans/audd-plans-pricing.yml)
-- [Rate Limits](rate-limits/audd-rate-limits.yml)
-- [Fin Ops](finops/audd-finops.yml)
+- [GitHub](https://github.com/AudDMusic)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 26.4** — thin · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 70.0 |
+| Contract quality | 49.6 |
+| Contract governance | 0.0 |
+| Operational transparency | 10.5 |
+| Developer ergonomics | 26.2 |
+| Access clarity | 7.9 |
+
+**Agent readiness 57.0** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | yes |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | yes |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 11.8** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/audd/](https://apis.io/providers/audd/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for AudD: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/audd/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
